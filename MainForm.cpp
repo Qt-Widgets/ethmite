@@ -144,7 +144,7 @@ MainForm::MainForm() {
     connect(widget.btnPlot, SIGNAL(clicked()), this, SLOT(plot()));
     connect(widget.btnSend, SIGNAL(clicked()), this, SLOT(setSatelliteIndex()));
     connect(&com, SIGNAL(readyPlot(float **)), this, SLOT(readyPlotSlot(float **)));
-    
+
     startTimer(500);
 
     setChannelState();
