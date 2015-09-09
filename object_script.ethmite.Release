@@ -1,0 +1,16 @@
+INPUT(
+./release/main.o
+./release/EthInterface.o
+./release/IoForm.o
+./release/MainForm.o
+./release/PlotForm.o
+./release/QLed.o
+./release/Satellite.o
+./release/kmodel.o
+./release/qrc_qml.o
+./release/moc_EthlInterface.o
+./release/moc_IoForm.o
+./release/moc_MainForm.o
+./release/moc_PlotForm.o
+./release/moc_QLed.o
+);

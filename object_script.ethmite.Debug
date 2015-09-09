@@ -1,0 +1,16 @@
+INPUT(
+./debug/main.o
+./debug/EthInterface.o
+./debug/IoForm.o
+./debug/MainForm.o
+./debug/PlotForm.o
+./debug/QLed.o
+./debug/Satellite.o
+./debug/kmodel.o
+./debug/qrc_qml.o
+./debug/moc_EthlInterface.o
+./debug/moc_IoForm.o
+./debug/moc_MainForm.o
+./debug/moc_PlotForm.o
+./debug/moc_QLed.o
+);

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="release">
+        <in>moc_EthlInterface.cpp</in>
+        <in>moc_IoForm.cpp</in>
+        <in>moc_MainForm.cpp</in>
+        <in>moc_PlotForm.cpp</in>
+        <in>moc_QLed.cpp</in>
+        <in>qrc_qml.cpp</in>
+      </df>
+      <in>EthInterface.cpp</in>
+      <in>IoForm.cpp</in>
+      <in>MainForm.cpp</in>
+      <in>PlotForm.cpp</in>
+      <in>QLed.cpp</in>
+      <in>Satellite.cpp</in>
+      <in>main.cpp</in>
+    </df>
+    <logicalFolder name="glonass"
+                   displayName="glonass"
+                   projectFiles="true"
+                   root="../../glonass">
+      <itemPath>../../glonass/kmodel.c</itemPath>
+      <itemPath>../../glonass/kmodel.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Важные файлы"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>ethmite.pro</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-std=c89"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>../../glonass</pElem>
+              <pElem></pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>QT_CORE_LIB=1</Elem>
+              <Elem>QT_DECLARATIVE_LIB=1</Elem>
+              <Elem>QT_GUI_LIB=1</Elem>
+              <Elem>QT_NEEDS_QMAIN=1</Elem>
+              <Elem>QT_NETWORK_LIB=1</Elem>
+              <Elem>QT_NO_DEBUG=1</Elem>
+              <Elem>QT_QML_LIB=1</Elem>
+              <Elem>QT_QUICKWIDGETS_LIB=1</Elem>
+              <Elem>QT_QUICK_LIB=1</Elem>
+              <Elem>QT_SCRIPT_LIB=1</Elem>
+              <Elem>QT_SVG_LIB=1</Elem>
+              <Elem>QT_WIDGETS_LIB=1</Elem>
+              <Elem>QWT_DLL=1</Elem>
+              <Elem>UNICODE=1</Elem>
+              <Elem>__OPTIMIZE__=1</Elem>
+              <Elem>__REGISTER_PREFIX__=</Elem>
+            </preprocessorList>
+          </cTool>
+          <ccTool>
+            <preprocessorList>
+              <Elem>QT_CORE_LIB=1</Elem>
+              <Elem>QT_DECLARATIVE_LIB=1</Elem>
+              <Elem>QT_GUI_LIB=1</Elem>
+              <Elem>QT_NEEDS_QMAIN=1</Elem>
+              <Elem>QT_NETWORK_LIB=1</Elem>
+              <Elem>QT_NO_DEBUG=1</Elem>
+              <Elem>QT_QML_LIB=1</Elem>
+              <Elem>QT_QUICKWIDGETS_LIB=1</Elem>
+              <Elem>QT_QUICK_LIB=1</Elem>
+              <Elem>QT_SCRIPT_LIB=1</Elem>
+              <Elem>QT_SVG_LIB=1</Elem>
+              <Elem>QT_WIDGETS_LIB=1</Elem>
+              <Elem>QWT_DLL=1</Elem>
+              <Elem>UNICODE=1</Elem>
+              <Elem>_MT=1</Elem>
+              <Elem>__OPTIMIZE__=1</Elem>
+              <Elem>__REGISTER_PREFIX__=</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="../../glonass/kmodel.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="EthInterface.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+            <pElem></pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="IoForm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+            <pElem></pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="MainForm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQml</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQuickWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQuick</pElem>
+            <pElem>../../../../usr/qt/Tools/mingw491_32/i686-w64-mingw32/include/GL</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>C:/Qwt-6.1.2/include</pElem>
+            <pElem>../../glonass</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+            <pElem></pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="PlotForm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>C:/Qwt-6.1.2/include</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+            <pElem></pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="QLed.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="Satellite.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../glonass</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <folder path="0/release">
+        <ccTool>
+          <incDir>
+            <pElem>release</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQml</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQuickWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQuick</pElem>
+            <pElem>../../../../usr/qt/Tools/mingw491_32/i686-w64-mingw32/include/GL</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>C:/Qwt-6.1.2/include</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="release/moc_EthlInterface.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="release/moc_IoForm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="release/moc_MainForm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQml</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQuickWidgets</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtQuick</pElem>
+            <pElem>../../../../usr/qt/Tools/mingw491_32/i686-w64-mingw32/include/GL</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtNetwork</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>C:/Qwt-6.1.2/include</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="release/moc_PlotForm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem>C:/Qwt-6.1.2/include</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="release/moc_QLed.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtCore</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtGui</pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include/QtWidgets</pElem>
+            <pElem></pElem>
+            <pElem>../../../../usr/qt/5.4/mingw491_32/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="release/qrc_qml.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem></pElem>
+          </incDir>
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
