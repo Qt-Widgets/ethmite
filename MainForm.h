@@ -28,7 +28,7 @@ private:
     PlotForm plotForm;
     QLed *leds[IoFormCount];
     void timerEvent(QTimerEvent * event);
-    void setChannelState();
+    void setChannelState(qint32 index, qint32 state, qint32 label, qreal value);
 private slots:
     void open();
     void plot();

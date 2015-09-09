@@ -34,6 +34,13 @@ Item {
         repeater.itemAt(index).textBar = label;
     }
 
+    function setTime(value) {
+        var h = Math.ceil(value / 3600);
+        var m = (value % 3600) / 60;
+        var s = value % 60;
+        rectTime.timeLine = "%1:%2:%3".arg(h).arg(m).arg(s);
+    }
+
     Item {
         id: diagram
         anchors.fill: parent
@@ -158,6 +165,24 @@ Item {
             id: map
             source: "world.png"
             anchors.fill: parent
+        }
+    }
+
+    Rectangle {
+        id: rectTime
+        x: 100
+        y: 100
+        width: 100
+        height: 50
+        border.color: "black"
+        border.width: 2
+        radius: 8
+        property string timeLine: "00:00:00"
+        Text {
+            id: textTime
+            text: rectTime.timeLine
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
 }

@@ -26,10 +26,10 @@ android-no-sdk {
 
 export(INSTALLS)
 
-INCLUDEPATH += ../../glonass
+INCLUDEPATH += ../glonass d:/usr/qt/5.5/mingw492_32/include/qwt
 
 HEADERS += \
-    kmodel.h
+    ../glonass/kmodel.h
 
 SOURCES += \
-    ../../glonass/kmodel.c
+    ../glonass/kmodel.c

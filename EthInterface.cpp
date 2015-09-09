@@ -7,6 +7,7 @@
 
 #include "EthlInterface.h"
 #include <QDebug>
+#include <QDataStream>
 #include <math.h>
 
 EthInterface::EthInterface() {
@@ -38,7 +39,14 @@ EthInterface::EthInterface() {
         siha[i].setDevice(&fiha[i]);
         
         locked[i] = false;
+        states[i] = 0;
+        snr[i] = 0.0;
     }
+    
+    fsol.setFileName("sol.txt");
+    fsol.open(QFile::WriteOnly | QFile::Text);
+    ssol.setDevice(&fsol);
+    
     connect(this, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
 }
 
@@ -51,11 +59,21 @@ EthInterface::~EthInterface() {
         fisa[i].close();
         fiha[i].close();
     }
+    fsol.close();
 }
 
 bool EthInterface::isLocked(int channel) {
     return locked[channel];
 }
+
+int EthInterface::getStates(int channel) {
+    return states[channel];
+}
+
+float EthInterface::getSnr(int channel) {
+    return snr[channel];
+}
+
 void EthInterface::clear() {
     for (int i = 0; i < ChannelCount; i++) {
         frsa[i].resize(0);
@@ -65,6 +83,7 @@ void EthInterface::clear() {
         fisa[i].resize(0);
         fiha[i].resize(0);
     }
+    fsol.resize(0);
 }
 
 void EthInterface::readyReadSlot() {
@@ -113,6 +132,7 @@ void EthInterface::execCommand() {
                         << QString::number(lprs->range, 'g', 12) << '\n';
                 srsa[lprs->id].flush();
                 locked[lprs->id] = (bool)lprs->locked;
+                states[lprs->id] = lprs->locked ? states[lprs->id] | 0x01 : states[lprs->id] & 0xFE;
             }
             break;
         case CmdAddrLprsHa: 
@@ -121,7 +141,6 @@ void EthInterface::execCommand() {
                 srha[lprs->id] << iprsha[lprs->id] << '\t' << QString::number(lprs->range, 'g', 12) << '\n';
                 srha[lprs->id].flush();
             }
-//            printf("locked: %d\n", lprs->locked);
             fflush(stdout);
             break;
         case CmdAddrLcarSa: 
@@ -129,6 +148,8 @@ void EthInterface::execCommand() {
                 icarsa[lcar->id] = lcar->index;
                 sfsa[lcar->id] << icarsa[lcar->id] << '\t' << QString::number((qulonglong)lcar->phase) << '\n';
                 sfsa[lcar->id].flush();
+                states[lcar->id] = lcar->locked ? states[lcar->id] | 0x02 : states[lcar->id] & 0xFD;
+                snr[lcar->id] = lcar->snr < 1.0 ? 0.0 : 10.0 * log10f(lcar->snr * 500.0);
             }
             break;
         case CmdAddrLcarHa: 
@@ -158,11 +179,18 @@ void EthInterface::execCommand() {
             }
             break;
         case CmdAddrSlv:
-            printf("%d\n", slv->count);
-            printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
+            printf("%d\t%f\n", slv->count, slv->err);
+            printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
             for (int i = 0; i < slv->count; i++) {
                 printf("%10d\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
             }
+            ssol << slv->count << '\t' << slv->s[0] << '\t' <<
+                    QString::number(slv->err, 'g', 12) << '\t' <<
+                    QString::number(slv->dt , 'g', 12) << '\t' <<
+                    QString::number(slv->loc[0] , 'g', 12) << '\t' <<
+                    QString::number(slv->loc[1] , 'g', 12) << '\t' <<
+                    QString::number(slv->loc[2] , 'g', 12) << '\n';
+            ssol.flush();
             break;
 //        default: 
 //            printf("default\n");

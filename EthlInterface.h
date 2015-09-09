@@ -16,7 +16,7 @@
 class EthInterface : public QTcpSocket {
     Q_OBJECT
 public:
-    static const int32_t  ChannelCount    = 8;
+    static const int      ChannelCount    = 8;
     
     static const uint32_t CmdRead         = 0;
     static const uint32_t CmdWrite        = 1;
@@ -72,8 +72,8 @@ public:
         float i;
         float level;
         int32_t index;
-        uint64_t phase;
         float snr;
+        uint64_t phase;
     } loop_car;
 
 #pragma pack (1)
@@ -88,6 +88,7 @@ typedef struct {
     double p[ChannelCount];
     double loc[3];
     double dt;
+    double err;
     int32_t s[ChannelCount];
     int32_t is_valid;
     int32_t count;
@@ -113,6 +114,8 @@ typedef struct {
     void sendPacket(uint32_t *data, int dlen);
     void clear();
     bool isLocked(int channel);
+    int getStates(int channel);
+    float getSnr(int channel);    
 private:
     
     static const uint32_t Seop       = 0x7E7E7E7E;
@@ -130,19 +133,27 @@ private:
 
     uint32_t buffer[BufferLength];
     float *plot[2];
+    
     QFile frsa[ChannelCount];
     QFile frha[ChannelCount];
     QFile ffsa[ChannelCount];
     QFile ffha[ChannelCount];
     QFile fisa[ChannelCount];
     QFile fiha[ChannelCount];
+    QFile fsol;
+    
     QTextStream srsa[ChannelCount];
     QTextStream srha[ChannelCount];
     QTextStream sfsa[ChannelCount];
     QTextStream sfha[ChannelCount];
     QTextStream sisa[ChannelCount];
     QTextStream siha[ChannelCount];
+    QTextStream ssol;
+    
     bool locked[ChannelCount];
+    int states[ChannelCount];
+    float snr[ChannelCount];
+    
     bool acceptData(uint32_t value);
     void sendData(const uint32_t value, int32_t *index);
     uint32_t crc(uint32_t *data, int from, int len);

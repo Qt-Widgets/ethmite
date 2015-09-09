@@ -147,20 +147,24 @@ MainForm::MainForm() {
 
     startTimer(500);
 
-    setChannelState();
 }
 
 void MainForm::timerEvent(QTimerEvent * event) {
     for (int i = 0; i < ChannelCount; i++) {
         QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
         leds[i]->setState(c);
+        setChannelState(i, (quint32)com.getStates(i), i, com.getSnr(i) * 0.02);
     }
 }
 
-void MainForm::setChannelState() {
+void MainForm::setChannelState(qint32 index, qint32 state, qint32 label, qreal value) {
     QObject *obj = (QObject *)widget.quickWidget->rootObject();
-    QMetaObject::invokeMethod(obj, "setChannelState", Q_ARG(QVariant, 0), Q_ARG(QVariant, 1), Q_ARG(QVariant, 0), Q_ARG(QVariant, 0.5));
-//    QMetaObject::invokeMethod(obj, "test1");
+    QMetaObject::invokeMethod(obj, "setChannelState", 
+            Q_ARG(QVariant, index), 
+            Q_ARG(QVariant, state), 
+            Q_ARG(QVariant, label), 
+            Q_ARG(QVariant, value)
+    );
 }
 
 MainForm::~MainForm() {
@@ -195,7 +199,7 @@ void MainForm::setSatelliteIndex() {
     int c = 0;
 //    int index = widget.sbSatelliteIndex->value() - 1;
     Satellite sat;
-    sat.loadAgl("d:/tmp/agl/MCCT_150831.agl");
+    sat.loadAgl("d:/tmp/agl/MCCT_150909.agl");
     
     for (int i = 0; i < 24 && c < com.ChannelCount; i++) {
         sat.setTime(time(0), i);
