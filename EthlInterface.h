@@ -115,6 +115,7 @@ typedef struct {
     void clear();
     bool isLocked(int channel);
     int getStates(int channel);
+    int getTime(int channel);
     float getSnr(int channel);    
 private:
     
@@ -153,6 +154,7 @@ private:
     bool locked[ChannelCount];
     int states[ChannelCount];
     float snr[ChannelCount];
+    int time[ChannelCount];
     
     bool acceptData(uint32_t value);
     void sendData(const uint32_t value, int32_t *index);

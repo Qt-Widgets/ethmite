@@ -154,7 +154,9 @@ void MainForm::timerEvent(QTimerEvent * event) {
         QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
         leds[i]->setState(c);
         setChannelState(i, (quint32)com.getStates(i), i, com.getSnr(i) * 0.02);
+        
     }
+    setTime(com.getTime(0));
 }
 
 void MainForm::setChannelState(qint32 index, qint32 state, qint32 label, qreal value) {
@@ -164,6 +166,13 @@ void MainForm::setChannelState(qint32 index, qint32 state, qint32 label, qreal v
             Q_ARG(QVariant, state), 
             Q_ARG(QVariant, label), 
             Q_ARG(QVariant, value)
+    );
+}
+
+void MainForm::setTime(qint32 value) {
+    QObject *obj = (QObject *)widget.quickWidget->rootObject();
+    QMetaObject::invokeMethod(obj, "setTime", 
+            Q_ARG(QVariant, value) 
     );
 }
 

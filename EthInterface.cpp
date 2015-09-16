@@ -41,6 +41,7 @@ EthInterface::EthInterface() {
         locked[i] = false;
         states[i] = 0;
         snr[i] = 0.0;
+        time[i] = 0;
     }
     
     fsol.setFileName("sol.txt");
@@ -72,6 +73,10 @@ int EthInterface::getStates(int channel) {
 
 float EthInterface::getSnr(int channel) {
     return snr[channel];
+}
+
+int EthInterface::getTime(int channel) {
+    return time[channel];
 }
 
 void EthInterface::clear() {
@@ -124,7 +129,7 @@ void EthInterface::execCommand() {
             if (lprs->id < ChannelCount && lprs->id >= 0 && iprssa[lprs->id] != lprs->index) {
                 iprssa[lprs->id] = lprs->index;
                 srsa[lprs->id] 
-                        << iprssa[lprs->id] << '\t' 
+                        << lprs->index << '\t' 
                         << QString::number(lprs->sat[0], 'g', 12) << '\t' 
                         << QString::number(lprs->sat[1], 'g', 12) << '\t' 
                         << QString::number(lprs->sat[2], 'g', 12) << '\t' 
@@ -133,6 +138,7 @@ void EthInterface::execCommand() {
                 srsa[lprs->id].flush();
                 locked[lprs->id] = (bool)lprs->locked;
                 states[lprs->id] = lprs->locked ? states[lprs->id] | 0x01 : states[lprs->id] & 0xFE;
+                time[lprs->id] = lprs->index;
             }
             break;
         case CmdAddrLprsHa: 
