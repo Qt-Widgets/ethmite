@@ -188,7 +188,7 @@ void EthInterface::execCommand() {
             printf("%d\t%f\n", slv->count, slv->err);
             printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
             for (int i = 0; i < slv->count; i++) {
-                printf("%10d\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
+                printf("%10d\t%12.4f\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->ms[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
             }
             ssol << slv->count << '\t' << slv->s[0] << '\t' <<
                     QString::number(slv->err, 'g', 12) << '\t' <<

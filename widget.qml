@@ -8,8 +8,8 @@ Item {
     id: widget
     x: 0
     y: 0
-    width: 100
-    height: 100
+    width: 400
+    height: 400
 
     function setChannelState(index, state, label, value) {
         switch(state) {

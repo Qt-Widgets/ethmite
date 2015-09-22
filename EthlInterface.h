@@ -90,6 +90,7 @@ typedef struct {
     double dt;
     double err;
     int32_t s[ChannelCount];
+    float ms[ChannelCount];
     int32_t is_valid;
     int32_t count;
 } solution;

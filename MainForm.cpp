@@ -145,7 +145,7 @@ MainForm::MainForm() {
     connect(widget.btnSend, SIGNAL(clicked()), this, SLOT(setSatelliteIndex()));
     connect(&com, SIGNAL(readyPlot(float **)), this, SLOT(readyPlotSlot(float **)));
 
-    startTimer(500);
+    startTimer(200);
 
 }
 
@@ -208,7 +208,7 @@ void MainForm::setSatelliteIndex() {
     int c = 0;
 //    int index = widget.sbSatelliteIndex->value() - 1;
     Satellite sat;
-    sat.loadAgl("d:/tmp/agl/MCCT_150909.agl");
+    sat.loadAgl("d:/tmp/agl/MCCT_150922.agl");
     
     for (int i = 0; i < 24 && c < com.ChannelCount; i++) {
         sat.setTime(time(0), i);
