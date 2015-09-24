@@ -9,7 +9,7 @@ Item {
     x: 0
     y: 0
     width: 400
-    height: 400
+    height: 200
 
     function setChannelState(index, state, label, value) {
         switch(state) {
@@ -44,34 +44,131 @@ Item {
         rectTime.timeLine = "%1:%2:%3".arg(h).arg(m).arg(s);
     }
 
-    Item {
-        id: diagram
-        anchors.fill: parent
+    Column {
+        x: 0
+        y: 0
         width: parent.width
         height: parent.height
+        spacing: 0
 
-        property color colorNotLocked: Qt.rgba(1.0, 1.0, 1.0, 0.0)
-        property color colorDllLocked: Qt.rgba(0.5, 0.5, 0.5, 1.0)
-        property color colorPllLocked: Qt.rgba(0.9, 0.9, 0.0, 1.0)
-        property color colorInfLocked: Qt.rgba(0.0, 0.9, 0.0, 1.0)
-
-        property int stateNotLocked: 0
-        property int stateDllLocked: 1
-        property int statePllLocked: 2
-        property int stateInfLocked: 3
-
-        property int channelCount: 8
-        property int channelWidth: (width - channelSpacing * channelCount) / channelCount
-        property int channelSpacing: 1 + 0.05 * width / channelCount
-
-        Rectangle {
-            id: amps
+        Row {
+            property int itemCount: 3
+            property int itemWidth: (width - spacing * itemCount) / itemCount
             x: 0
             y: 0
             width: parent.width
-            height: parent.height
-            anchors.fill: parent
-            antialiasing: true
+            height: parent.height / 2
+            spacing: 1 + 0.1 * width / itemCount
+            Item {
+                id: radar
+                property int itemCount: 32
+                property color colorNet: Qt.rgba(0.0, 0.0, 0.5, 0.5)
+                x: 0
+                y: 0
+                width: parent.itemWidth
+                height: parent.height
+                antialiasing: true
+
+                Canvas {
+                    id: canvas
+                    readonly property real rscale0: 0.14644661
+                    readonly property real rscale1: 1 - rscale0
+                    anchors.fill: parent
+                    onPaint: {
+                        var ctx = canvas.getContext('2d');
+                        ctx.lineWidth = 1.0;
+                        ctx.strokeStyle = radar.colorNet;
+
+                        ctx.beginPath();
+
+                        ctx.moveTo(width * rscale0, height * rscale0);
+                        ctx.lineTo(width * rscale1, height * rscale1);
+
+                        ctx.moveTo(width * rscale1, height * rscale0);
+                        ctx.lineTo(width * rscale0, height * rscale1);
+
+                        ctx.moveTo(width * 0.5, 0     );
+                        ctx.lineTo(width * 0.5, height);
+
+                        ctx.moveTo(0    , height * 0.5);
+                        ctx.lineTo(width, height * 0.5);
+
+                        ctx.ellipse(1, 1, width - 2, height - 2);
+                        ctx.ellipse(width * 0.25, height * 0.25, width * 0.5, height * 0.5);
+
+                        ctx.stroke();
+                    }
+                }
+
+                Repeater {
+                    id: repRadar
+                    model: radar.itemCount
+                    Rectangle {
+                        x: (radar.width - width) * 0.5 + (Math.random() - 0.5) * radar.width * 0.707
+                        y: (radar.height - height) * 0.5 + (Math.random() - 0.5) * radar.height * 0.707
+                        width: radar.width * 0.1
+                        height: width
+                        radius: width
+                        color: "green"
+                    }
+                }
+            }
+
+            Item {
+                id: world
+                x: 0
+                y: 0
+                width: parent.itemWidth
+                height: parent.height
+                antialiasing: true
+                Image {
+                    id: map
+                    source: "world.png"
+                    anchors.fill: parent
+                }
+            }
+
+            Rectangle {
+                id: rectTime
+                x: 0
+                y: 0
+                width: parent.itemWidth
+                height: parent.height
+                border.color: "black"
+                border.width: 2
+                radius: 8
+                property string timeLine: "00:00:00"
+                Text {
+                    id: textTime
+                    text: rectTime.timeLine
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.pointSize: rectTime.width / 8
+                }
+            }
+        }
+
+        Rectangle {
+            id: diagram
+            x: 0
+            y: 0
+            width: parent.width
+            height: parent.height / 2
+
+            property color colorNotLocked: Qt.rgba(1.0, 1.0, 1.0, 0.0)
+            property color colorDllLocked: Qt.rgba(0.5, 0.5, 0.5, 1.0)
+            property color colorPllLocked: Qt.rgba(0.9, 0.9, 0.0, 1.0)
+            property color colorInfLocked: Qt.rgba(0.0, 0.9, 0.0, 1.0)
+
+            property int stateNotLocked: 0
+            property int stateDllLocked: 1
+            property int statePllLocked: 2
+            property int stateInfLocked: 3
+
+            property int channelCount: 8
+            property int channelWidth: (width - channelSpacing * channelCount) / channelCount
+            property int channelSpacing: 1 + 0.05 * width / channelCount
+
             Row {
                 id: row
                 x: 1 + diagram.channelSpacing * 0.5
@@ -100,101 +197,7 @@ Item {
                 }
             }
         }
+
     }
-    Row {
-        property int itemCount: 3
-        property int itemWidth: (width - spacing * itemCount) / itemCount
-        x: 0
-        y: 0
-        width: parent.width
-        height: parent.height / 4
-        spacing: 1 + 0.1 * width / itemCount
-        Item {
-            id: radar
-            property int itemCount: 32
-            property color colorNet: Qt.rgba(0.0, 0.0, 0.5, 0.5)
-            x: 0
-            y: 0
-            width: parent.itemWidth
-            height: parent.height
-            antialiasing: true
 
-            Canvas {
-                id: canvas
-                readonly property real rscale0: 0.14644661
-                readonly property real rscale1: 1 - rscale0
-                anchors.fill: parent
-                onPaint: {
-                    var ctx = canvas.getContext('2d');
-                    ctx.lineWidth = 1.0;
-                    ctx.strokeStyle = radar.colorNet;
-
-                    ctx.beginPath();
-
-                    ctx.moveTo(width * rscale0, height * rscale0);
-                    ctx.lineTo(width * rscale1, height * rscale1);
-
-                    ctx.moveTo(width * rscale1, height * rscale0);
-                    ctx.lineTo(width * rscale0, height * rscale1);
-
-                    ctx.moveTo(width * 0.5, 0     );
-                    ctx.lineTo(width * 0.5, height);
-
-                    ctx.moveTo(0    , height * 0.5);
-                    ctx.lineTo(width, height * 0.5);
-
-                    ctx.ellipse(1, 1, width - 2, height - 2);
-                    ctx.ellipse(width * 0.25, height * 0.25, width * 0.5, height * 0.5);
-
-                    ctx.stroke();
-                }
-            }
-
-            Repeater {
-                id: repRadar
-                model: radar.itemCount
-                Rectangle {
-                    x: (radar.width - width) * 0.5 + (Math.random() - 0.5) * radar.width * 0.707
-                    y: (radar.height - height) * 0.5 + (Math.random() - 0.5) * radar.height * 0.707
-                    width: radar.width * 0.1
-                    height: width
-                    radius: width
-                    color: "green"
-                }
-            }
-        }
-
-        Item {
-            id: world
-            x: 0
-            y: 0
-            width: parent.itemWidth
-            height: parent.height
-            antialiasing: true
-            Image {
-                id: map
-                source: "world.png"
-                anchors.fill: parent
-            }
-        }
-
-        Rectangle {
-            id: rectTime
-            x: 0
-            y: 0
-            width: parent.itemWidth
-            height: parent.height
-            border.color: "black"
-            border.width: 2
-            radius: 8
-            property string timeLine: "00:00:00"
-            Text {
-                id: textTime
-                text: rectTime.timeLine
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.pointSize: rectTime.width / 8
-            }
-        }
-    }
 }
