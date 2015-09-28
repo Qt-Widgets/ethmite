@@ -44,6 +44,28 @@ Item {
         rectTime.timeLine = "%1:%2:%3".arg(h).arg(m).arg(s);
     }
 
+    function setRadarItem(index, azm, elv) {
+        var r, x, y, isVisible;
+
+        r = elv / Math.PI;
+        if (r >= 0.0 && r <= 0.5) {
+            x = r * Math.cos(azm);
+            y = r * Math.sin(azm);
+            isVisible = true;
+        }
+        else {
+            x = 0.0;
+            y = 0.0;
+            isVisible = false;
+        }
+
+        repRadar.itemAt(index).posX = x;
+        repRadar.itemAt(index).posY = y;
+        repRadar.itemAt(index).colorValue = (Math.random() > 0.5) ? "green" : "yellow";
+        repRadar.itemAt(index).isVisible = isVisible;
+
+    }
+
     Column {
         x: 0
         y: 0
@@ -52,17 +74,19 @@ Item {
         spacing: 0
 
         Row {
-            property int itemCount: 3
-            property int itemWidth: (width - spacing * itemCount) / itemCount
             x: 0
             y: 0
             width: parent.width
             height: parent.height / 2
+
+            property int itemCount: 3
+            property int itemWidth: (width - spacing * itemCount) / itemCount
+
             spacing: 1 + 0.1 * width / itemCount
             Item {
                 id: radar
                 property int itemCount: 32
-                property color colorNet: Qt.rgba(0.0, 0.0, 0.5, 0.5)
+                property color colorNet: Qt.rgba(0.0, 0.0, 0.0, 1.0)
                 x: 0
                 y: 0
                 width: parent.itemWidth
@@ -98,19 +122,30 @@ Item {
 
                         ctx.stroke();
                     }
+
                 }
 
                 Repeater {
                     id: repRadar
                     model: radar.itemCount
                     Rectangle {
-                        x: (radar.width - width) * 0.5 + (Math.random() - 0.5) * radar.width * 0.707
-                        y: (radar.height - height) * 0.5 + (Math.random() - 0.5) * radar.height * 0.707
+                        property real posX: Math.random() - 0.5
+                        property real posY: Math.random() - 0.5
+                        property color colorValue: (Math.random() > 0.5) ? "green" : "yellow"
+                        property bool isVisible: (Math.random() > 0.5)
+                        x: (radar.width  - width ) * 0.5 + posX * radar.width  * 0.707
+                        y: (radar.height - height) * 0.5 + posY * radar.height * 0.707
                         width: radar.width * 0.1
                         height: width
                         radius: width
-                        color: "green"
+                        color: colorValue
+                        visible: isVisible
                     }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: setRadarItem(Math.floor(Math.random() * 31), (Math.random() - 0.5) * Math.PI, 2.0 * Math.random() * Math.PI)
                 }
             }
 
