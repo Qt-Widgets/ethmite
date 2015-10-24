@@ -6,6 +6,7 @@ INPUT(
 ./release/PlotForm.o
 ./release/QLed.o
 ./release/Satellite.o
+./release/gloinf.o
 ./release/kmodel.o
 ./release/qrc_qml.o
 ./release/moc_EthlInterface.o

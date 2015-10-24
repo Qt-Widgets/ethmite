@@ -22,6 +22,7 @@ public:
 private:
     static const int IoFormCount = 18;
     static const int ChannelCount = 8;
+    static const int RadarChannelCount = 24;
     IoForm *ioForm[IoFormCount];
     Ui::MainForm widget;
     EthInterface com;
@@ -29,6 +30,9 @@ private:
     QLed *leds[IoFormCount];
     void timerEvent(QTimerEvent * event);
     void setChannelState(qint32 index, qint32 state, qint32 label, qreal value);
+    void setRadarItem(qint32 index, qreal azm, qreal elv);
+    void setWorldLocation(qreal lat, qreal lon);
+    void setWorldSolution(qreal lat, qreal lon, qreal alt, boolean isVisible);
     void setTime(qint32 value);
 private slots:
     void open();

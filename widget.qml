@@ -41,29 +41,51 @@ Item {
         h = ("0" + h).slice(-2);
         m = ("0" + m).slice(-2);
         s = ("0" + s).slice(-2);
-        rectTime.timeLine = "%1:%2:%3".arg(h).arg(m).arg(s);
+        rectTime.lineTime = "%1:%2:%3".arg(h).arg(m).arg(s);
+    }
+
+    function setLla(lat, lon, alt) {
+        var la = Number(lat * 57.295779513).toFixed(4);
+        var lo = Number(lon * 57.295779513).toFixed(4);
+        var al = Number(alt).toFixed(1);
+
+        rectTime.lineLat = "Ш:%1".arg(la);
+        rectTime.lineLon = "Д:%1".arg(lo);
+        rectTime.lineAlt = "В:%1".arg(al);
     }
 
     function setRadarItem(index, azm, elv) {
-        var r, x, y, isVisible;
+        var rr, xx, yy, isVisible;
 
-        r = elv / Math.PI;
-        if (r >= 0.0 && r <= 0.5) {
-            x = r * Math.cos(azm);
-            y = r * Math.sin(azm);
+        rr = 0.5 - elv / Math.PI;
+        if (rr >= 0.0 && rr <= 0.5) {
+            xx = rr * Math.cos(azm);
+            yy = rr * Math.sin(azm);
             isVisible = true;
         }
         else {
-            x = 0.0;
-            y = 0.0;
+            xx = 0.0;
+            yy = 0.0;
             isVisible = false;
         }
 
-        repRadar.itemAt(index).posX = x;
-        repRadar.itemAt(index).posY = y;
-        repRadar.itemAt(index).colorValue = (Math.random() > 0.5) ? "green" : "yellow";
+        repRadar.itemAt(index).posX = xx;
+        repRadar.itemAt(index).posY = yy;
+        repRadar.itemAt(index).colorValue = "green";//(Math.random() > 0.5) ? "green" : "yellow";
         repRadar.itemAt(index).isVisible = isVisible;
 
+    }
+
+    function setWorldLocation(lat, lon) {
+        world.locX = 0.5 * lon / Math.PI;
+        world.locY = -lat / Math.PI;
+    }
+
+    function setWorldSolution(lat, lon, alt, isVisible) {
+        world.slvX = 0.5 * lon / Math.PI;
+        world.slvY = -lat / Math.PI;
+        world.slvVisible = isVisible;
+        setLla(lat, lon, alt);
     }
 
     Column {
@@ -85,7 +107,7 @@ Item {
             spacing: 1 + 0.1 * width / itemCount
             Item {
                 id: radar
-                property int itemCount: 32
+                property int itemCount: 24
                 property color colorNet: Qt.rgba(0.0, 0.0, 0.0, 1.0)
                 x: 0
                 y: 0
@@ -133,8 +155,8 @@ Item {
                         property real posY: Math.random() - 0.5
                         property color colorValue: (Math.random() > 0.5) ? "green" : "yellow"
                         property bool isVisible: (Math.random() > 0.5)
-                        x: (radar.width  - width ) * 0.5 + posX * radar.width  * 0.707
-                        y: (radar.height - height) * 0.5 + posY * radar.height * 0.707
+                        x: (radar.width  - width ) * 0.5 + posX * radar.width
+                        y: (radar.height - height) * 0.5 + posY * radar.height
                         width: radar.width * 0.1
                         height: width
                         radius: width
@@ -143,10 +165,10 @@ Item {
                     }
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: setRadarItem(Math.floor(Math.random() * 31), (Math.random() - 0.5) * Math.PI, 2.0 * Math.random() * Math.PI)
-                }
+//                MouseArea {
+//                    anchors.fill: parent
+//                    onClicked: setRadarItem(Math.floor(Math.random() * 23), (Math.random() - 0.5) * Math.PI, 2.0 * Math.random() * Math.PI)
+//                }
             }
 
             Item {
@@ -156,11 +178,53 @@ Item {
                 width: parent.itemWidth
                 height: parent.height
                 antialiasing: true
+
+                property real locX: Math.random() - 0.5
+                property real locY: Math.random() - 0.5
+                property real slvX: Math.random() - 0.5
+                property real slvY: Math.random() - 0.5
+                property bool slvVisible: true//(Math.random() > 0.5)
+
                 Image {
                     id: map
                     source: "world.png"
                     anchors.fill: parent
                 }
+
+                Canvas {
+                    id: canvasWorld
+                    anchors.fill: parent
+
+                    onPaint: {
+                        var ctx = canvasWorld.getContext('2d');
+                        ctx.lineWidth = 1.0;
+                        ctx.strokeStyle = Qt.rgba(0.9, 0.0, 0.0, 0.8);
+
+                        ctx.beginPath();
+
+                        ctx.moveTo(width * (world.locX + 0.5), 0     );
+                        ctx.lineTo(width * (world.locX + 0.5), height);
+
+                        ctx.moveTo(0    , height * (world.locY + 0.5));
+                        ctx.lineTo(width, height * (world.locY + 0.5));
+
+                        ctx.stroke();
+                        console.log("paint");
+                    }
+                }
+
+                Rectangle {
+                    id: posPoint
+                    width: parent.width * 0.1
+                    height: width
+                    radius: width
+                    color: Qt.rgba(0.0, 0.9, 0.0, 0.8)
+
+                    x: (parent.width  - width ) * 0.5 + world.slvX * parent.width
+                    y: (parent.height - height) * 0.5 + world.slvY * parent.height
+                    visible: world.slvVisible
+                }
+
             }
 
             Rectangle {
@@ -172,14 +236,46 @@ Item {
                 border.color: "black"
                 border.width: 2
                 radius: 8
-                property string timeLine: "00:00:00"
-                Text {
-                    id: textTime
-                    text: rectTime.timeLine
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    font.pointSize: rectTime.width / 8
+                property string lineTime: "00:00:00"
+                property string lineLat: "Ш:+0.0000"
+                property string lineLon: "Д:+0.0000"
+                property string lineAlt: "В:0.0"
+                property real textScale: 0.0833
+                property string textFont: "Consolas"
+                Column {
+                    x: 0
+                    y: 0
+                    width: parent.width
+                    height: parent.height
+                    anchors.fill: parent
+                    Text {
+                        id: textTime
+                        font.family: rectTime.textFont
+                        font.pointSize: rectTime.width * rectTime.textScale
+                        text: rectTime.lineTime
+//                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        font.family: rectTime.textFont
+                        font.pointSize: rectTime.width * rectTime.textScale
+                        text: rectTime.lineLat
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        font.family: rectTime.textFont
+                        font.pointSize: rectTime.width * rectTime.textScale
+                        text: rectTime.lineLon
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        font.family: rectTime.textFont
+                        font.pointSize: rectTime.width * rectTime.textScale
+                        text: rectTime.lineAlt
+                    }
                 }
+
             }
         }
 
@@ -214,6 +310,8 @@ Item {
                 Repeater {
                     id: repeater
                     model: diagram.channelCount
+                    property real textScale: 0.25
+                    property string textFont: "Consolas"
                     Rectangle{
                         property color colorBar: diagram.colorInfLocked
                         property int heightBar: parent.height / (index + 1)
@@ -226,7 +324,8 @@ Item {
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottom: parent.bottom
                             text: parent.textBar
-                            font.pointSize: parent.width * 0.25
+                            font.family: repeater.textFont
+                            font.pointSize: parent.width * repeater.textScale
                         }
                     }
                 }

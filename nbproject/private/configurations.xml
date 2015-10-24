@@ -34,6 +34,8 @@
       <in>QLed.h</in>
       <in>Satellite.cpp</in>
       <in>Satellite.h</in>
+      <in>gloinf.c</in>
+      <in>gloinf.h</in>
       <in>main.cpp</in>
       <in>ui_IoForm.h</in>
       <in>ui_MainForm.h</in>

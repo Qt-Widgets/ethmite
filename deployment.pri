@@ -29,7 +29,9 @@ export(INSTALLS)
 INCLUDEPATH += ../glonass d:/usr/qt/5.5/mingw492_32/include/qwt
 
 HEADERS += \
+    gloinf.h \
     ../glonass/kmodel.h
 
 SOURCES += \
+    gloinf.c \
     ../glonass/kmodel.c

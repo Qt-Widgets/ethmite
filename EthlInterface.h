@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QTcpSocket>
 #include "inttypes.h"
+#include "gloinf.h"
 
 class EthInterface : public QTcpSocket {
     Q_OBJECT
@@ -29,6 +30,7 @@ public:
     static const uint32_t CmdAddrLcarHa   = 5;
     static const uint32_t CmdAddrInfoHa   = 6;
 
+    static const uint32_t CmdAddrFrame    = 12;
     static const uint32_t CmdAddrSlv      = 13;
     static const uint32_t CmdAddrVga      = 14;
     static const uint32_t CmdAddrControl  = 15;
@@ -37,7 +39,7 @@ public:
 #pragma pack (1)
     typedef struct loop_prs_tag {
         uint32_t id;
-        uint32_t enabled;
+        int32_t number;
         uint32_t locked;
         uint32_t tout;
         uint32_t reset;
@@ -117,7 +119,9 @@ typedef struct {
     bool isLocked(int channel);
     int getStates(int channel);
     int getTime(int channel);
-    float getSnr(int channel);    
+    float getSnr(int channel);
+    double *getLla();
+    
 private:
     
     static const uint32_t Seop       = 0x7E7E7E7E;
@@ -156,12 +160,18 @@ private:
     int states[ChannelCount];
     float snr[ChannelCount];
     int time[ChannelCount];
+    double xyzt[4];
+    double lla[3] = {0, 0, 0};
     
     bool acceptData(uint32_t value);
+    void acceptPlot();
+    void acceptFrame();
     void sendData(const uint32_t value, int32_t *index);
     uint32_t crc(uint32_t *data, int from, int len);
     void execCommand();
-    void acceptPlot();
+    void setSolution(double x, double y, double z, double t);
+    void xyz2lla(double *xyz, double *lla);    
+    
 private slots:
     void readyReadSlot();
 signals:

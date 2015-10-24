@@ -16,6 +16,8 @@
       <in>PlotForm.cpp</in>
       <in>QLed.cpp</in>
       <in>Satellite.cpp</in>
+      <in>gloinf.c</in>
+      <in>gloinf.h</in>
       <in>main.cpp</in>
     </df>
     <logicalFolder name="ExternalFiles"
@@ -180,6 +182,10 @@
           </incDir>
         </ccTool>
       </folder>
+      <item path="gloinf.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="gloinf.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
         <ccTool>
           <incDir>

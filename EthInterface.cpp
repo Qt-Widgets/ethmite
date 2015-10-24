@@ -184,12 +184,15 @@ void EthInterface::execCommand() {
                 siha[inf->id].flush();
             }
             break;
+        case CmdAddrFrame:
+            acceptFrame();
+            break;
         case CmdAddrSlv:
-            printf("%d\t%f\n", slv->count, slv->err);
-            printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
-            for (int i = 0; i < slv->count; i++) {
-                printf("%10d\t%12.4f\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->ms[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
-            }
+//            printf("%d\t%f\n", slv->count, slv->err);
+//            printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
+//            for (int i = 0; i < slv->count; i++) {
+//                printf("%10d\t%12.4f\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->ms[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
+//            }
             ssol << slv->count << '\t' << slv->s[0] << '\t' <<
                     QString::number(slv->err, 'g', 12) << '\t' <<
                     QString::number(slv->dt , 'g', 12) << '\t' <<
@@ -197,6 +200,7 @@ void EthInterface::execCommand() {
                     QString::number(slv->loc[1] , 'g', 12) << '\t' <<
                     QString::number(slv->loc[2] , 'g', 12) << '\n';
             ssol.flush();
+            setSolution(slv->loc[0], slv->loc[1], slv->loc[2], slv->dt);
             break;
 //        default: 
 //            printf("default\n");
@@ -206,6 +210,49 @@ void EthInterface::execCommand() {
         acceptPlot();
     }
     
+}
+void EthInterface::setSolution(double x, double y, double z, double t) {
+    xyzt[0] = x;
+    xyzt[1] = y;
+    xyzt[2] = z;
+    xyzt[3] = t;
+    xyz2lla(xyzt, lla);
+//    printf("solve: %8.4f %8.4f %8.4f\n", lla[0] * 180.0 / M_PI, lla[1] * 180.0 / M_PI, lla[2]);
+}
+
+double *EthInterface::getLla() {
+    return lla;
+}
+
+void EthInterface::xyz2lla(double *xyz, double *lla) {
+  	double p, T, sT, cT, N;
+//	double const wz = 7.2921151467e-5;
+	double const a_axis = 6378137.0;   //WGS-84 earth's semi major axis
+	double const b_axis = 6356752.31;  //WGS-84 earth's semi minor axis
+	//first  numerical eccentricity
+	double const e1sqr = ((a_axis * a_axis - b_axis * b_axis) / (a_axis * a_axis));
+	//second numerical eccentricity
+	double const e2sqr = ((a_axis * a_axis - b_axis * b_axis) / (b_axis * b_axis));
+
+  	p = sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);
+  	T = atan(xyz[2] * a_axis / (p * b_axis));
+  	sT = sin(T);
+  	cT = cos(T);
+  	lla[0] = atan((xyz[2] + e2sqr * b_axis * sT * sT * sT) / (p - e1sqr * a_axis * cT * cT * cT));
+  	if (xyz[0] == 0.0)
+    		lla[1] = M_PI / 2.0;
+  	else
+    		lla[1] = atan(xyz[1] / xyz[0]);
+
+  	if (xyz[0] < 0 && xyz[1] > 0) lla[1] += M_PI;
+    if (xyz[0] < 0 && xyz[1] < 0) lla[1] -= M_PI;
+
+//    blh[1] += -wz * t * 60 - gsto;
+//    blh[1] = fmod(blh[1] + 3 * M_PI, twopi) - M_PI;
+//    if (blh[1] < -M_PI) blh[1] += 2 * M_PI;
+
+    N = a_axis / sqrt(1.0 - e1sqr * sin(lla[0]) * sin(lla[0]));
+  	lla[2] = p / cos(lla[0]) - N;
 }
 
 void EthInterface::sendData(const uint32_t value, int32_t *index) {
@@ -265,6 +312,11 @@ void EthInterface::acceptPlot() {
     if (buffer[1] - CmdAddrPlot + 1 == PlotPacketCount) {
         emit readyPlot(plot);
     }
+}
+
+void EthInterface::acceptFrame() {
+    gloinf_frame *frame = (gloinf_frame *)&buffer[2];
+    gloinf_print(frame);
 }
 
 bool EthInterface::acceptData(uint32_t value) {
