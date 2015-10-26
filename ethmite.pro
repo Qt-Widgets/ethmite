@@ -1,8 +1,8 @@
 TEMPLATE = app
 
-QT += qml quick widgets network declarative quickwidgets
+QT += qml quick widgets network declarative quickwidgets 
 
-CONFIG += qwt
+CONFIG += qwt console
 
 SOURCES += main.cpp \
     EthInterface.cpp \
@@ -33,3 +33,6 @@ HEADERS += \
     QLed.h \
     Satellite.h
 
+win32: {
+    RC_FILE = ethmite.rc
+}

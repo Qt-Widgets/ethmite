@@ -13,6 +13,7 @@
 PlotForm::PlotForm() {
     m_data[0] = 0;
     m_data[1] = 0;
+    m_data[2] = 0;
     m_data_len = 0;
     x_axis_type = 0;
     widget.setupUi(this);

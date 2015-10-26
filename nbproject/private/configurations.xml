@@ -6,6 +6,8 @@
       </df>
       <df name="1">
       </df>
+      <df name="almanac">
+      </df>
       <df name="debug">
         <in>moc_EthlInterface.cpp</in>
         <in>moc_IoForm.cpp</in>

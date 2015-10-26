@@ -161,7 +161,7 @@ private:
     float snr[ChannelCount];
     int time[ChannelCount];
     double xyzt[4];
-    double lla[3] = {0, 0, 0};
+    double lla[3];
     
     bool acceptData(uint32_t value);
     void acceptPlot();

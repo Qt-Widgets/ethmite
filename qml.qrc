@@ -2,6 +2,6 @@
     <qresource prefix="/">
         <file>widget.qml</file>
         <file>world.png</file>
-        <file>Button.qml</file>
+        <file>earth.png</file>
     </qresource>
 </RCC>

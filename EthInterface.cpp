@@ -11,6 +11,10 @@
 #include <math.h>
 
 EthInterface::EthInterface() {
+    lla[0] = 0.0;
+    lla[1] = 0.0;
+    lla[2] = 0.0;
+        
     plot[0] = new float[PlotLength];
     plot[1] = new float[PlotLength];
     for (int i = 0; i < ChannelCount; i++) {

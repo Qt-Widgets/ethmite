@@ -10,14 +10,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/work/pc/ethmite/gloinf.c</file>
             <file>file:/D:/work/pc/ethmite/EthInterface.cpp</file>
             <file>file:/D:/work/pc/ethmite/MainForm.cpp</file>
             <file>file:/D:/work/pc/ethmite/MainForm.h</file>
-            <file>file:/D:/work/pc/ethmite/IoForm.h</file>
-            <file>file:/D:/work/pc/ethmite/gloinf.h</file>
+            <file>file:/D:/work/pc/ethmite/ui_MainForm.h</file>
+            <file>file:/D:/work/pc/ethmite/PlotForm.cpp</file>
             <file>file:/D:/work/pc/ethmite/EthlInterface.h</file>
-            <file>file:/D:/work/pc/ethmite/IoForm.cpp</file>
+            <file>file:/D:/work/pc/ethmite/main.cpp</file>
         </group>
     </open-files>
 </project-private>

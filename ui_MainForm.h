@@ -22,13 +22,12 @@
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
-#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "QQuickWidget"
+#include "QtQuickWidgets/QQuickWidget"
 
 QT_BEGIN_NAMESPACE
 
@@ -37,13 +36,6 @@ class Ui_MainForm
 public:
     QWidget *centralwidget;
     QHBoxLayout *horizontalLayout;
-    QWidget *widget_3;
-    QVBoxLayout *verticalLayout_4;
-    QGroupBox *gbDevice;
-    QVBoxLayout *verticalLayout;
-    QComboBox *comboBox;
-    QPushButton *btnOpen;
-    QSpacerItem *verticalSpacer;
     QWidget *widget_2;
     QVBoxLayout *verticalLayout_2;
     QTabWidget *tabWidget;
@@ -68,6 +60,10 @@ public:
     QSpinBox *sbSatelliteIndex;
     QPushButton *btnSend;
     QPushButton *btnPlot;
+    QGroupBox *gbDevice;
+    QVBoxLayout *verticalLayout;
+    QComboBox *comboBox;
+    QPushButton *btnOpen;
     QWidget *tab_4;
     QVBoxLayout *verticalLayout_7;
     QQuickWidget *quickWidget;
@@ -80,44 +76,15 @@ public:
         if (MainForm->objectName().isEmpty())
             MainForm->setObjectName(QStringLiteral("MainForm"));
         MainForm->resize(620, 559);
+        QIcon icon;
+        icon.addFile(QStringLiteral(":/earth.png"), QSize(), QIcon::Normal, QIcon::Off);
+        MainForm->setWindowIcon(icon);
         centralwidget = new QWidget(MainForm);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         horizontalLayout = new QHBoxLayout(centralwidget);
         horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         horizontalLayout->setContentsMargins(0, 0, 0, -1);
-        widget_3 = new QWidget(centralwidget);
-        widget_3->setObjectName(QStringLiteral("widget_3"));
-        verticalLayout_4 = new QVBoxLayout(widget_3);
-        verticalLayout_4->setSpacing(0);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        verticalLayout_4->setContentsMargins(0, 0, 0, -1);
-        gbDevice = new QGroupBox(widget_3);
-        gbDevice->setObjectName(QStringLiteral("gbDevice"));
-        gbDevice->setFlat(false);
-        gbDevice->setCheckable(false);
-        verticalLayout = new QVBoxLayout(gbDevice);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        comboBox = new QComboBox(gbDevice);
-        comboBox->setObjectName(QStringLiteral("comboBox"));
-
-        verticalLayout->addWidget(comboBox);
-
-        btnOpen = new QPushButton(gbDevice);
-        btnOpen->setObjectName(QStringLiteral("btnOpen"));
-
-        verticalLayout->addWidget(btnOpen);
-
-
-        verticalLayout_4->addWidget(gbDevice);
-
-        verticalSpacer = new QSpacerItem(20, 266, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        verticalLayout_4->addItem(verticalSpacer);
-
-
-        horizontalLayout->addWidget(widget_3);
-
         widget_2 = new QWidget(centralwidget);
         widget_2->setObjectName(QStringLiteral("widget_2"));
         verticalLayout_2 = new QVBoxLayout(widget_2);
@@ -135,7 +102,7 @@ public:
         scrollAreaSa->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 212, 349));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 208, 349));
         verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_3->setSpacing(0);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
@@ -161,7 +128,7 @@ public:
         scrollAreaHa->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QStringLiteral("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 212, 349));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 208, 349));
         verticalLayout_5 = new QVBoxLayout(scrollAreaWidgetContents_2);
         verticalLayout_5->setSpacing(0);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
@@ -184,7 +151,7 @@ public:
         scrollAreaState->setWidgetResizable(true);
         scrollAreaWidgetContents_3 = new QWidget();
         scrollAreaWidgetContents_3->setObjectName(QStringLiteral("scrollAreaWidgetContents_3"));
-        scrollAreaWidgetContents_3->setGeometry(QRect(0, 0, 212, 349));
+        scrollAreaWidgetContents_3->setGeometry(QRect(0, 0, 208, 349));
         verticalLayout_6 = new QVBoxLayout(scrollAreaWidgetContents_3);
         verticalLayout_6->setSpacing(0);
         verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
@@ -223,6 +190,23 @@ public:
         btnPlot = new QPushButton(tab_3);
         btnPlot->setObjectName(QStringLiteral("btnPlot"));
         btnPlot->setGeometry(QRect(110, 30, 75, 23));
+        gbDevice = new QGroupBox(tab_3);
+        gbDevice->setObjectName(QStringLiteral("gbDevice"));
+        gbDevice->setGeometry(QRect(40, 200, 117, 97));
+        gbDevice->setFlat(false);
+        gbDevice->setCheckable(false);
+        verticalLayout = new QVBoxLayout(gbDevice);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        comboBox = new QComboBox(gbDevice);
+        comboBox->setObjectName(QStringLiteral("comboBox"));
+
+        verticalLayout->addWidget(comboBox);
+
+        btnOpen = new QPushButton(gbDevice);
+        btnOpen->setObjectName(QStringLiteral("btnOpen"));
+
+        verticalLayout->addWidget(btnOpen);
+
         tabWidget->addTab(tab_3, QString());
         tab_4 = new QWidget();
         tab_4->setObjectName(QStringLiteral("tab_4"));
@@ -260,7 +244,7 @@ public:
         MainForm->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainForm);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 620, 21));
+        menubar->setGeometry(QRect(0, 0, 620, 26));
         MainForm->setMenuBar(menubar);
         statusbar = new QStatusBar(MainForm);
         statusbar->setObjectName(QStringLiteral("statusbar"));
@@ -277,16 +261,16 @@ public:
     void retranslateUi(QMainWindow *MainForm)
     {
         MainForm->setWindowTitle(QApplication::translate("MainForm", "Mite", 0));
-        gbDevice->setTitle(QApplication::translate("MainForm", "Device", 0));
-        btnOpen->setText(QApplication::translate("MainForm", "Open", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainForm", "Standard", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainForm", "High", 0));
         gbState->setTitle(QApplication::translate("MainForm", "Locked", 0));
         groupBox->setTitle(QApplication::translate("MainForm", "Satellite", 0));
         btnSend->setText(QApplication::translate("MainForm", "Set", 0));
         btnPlot->setText(QApplication::translate("MainForm", "Plot", 0));
+        gbDevice->setTitle(QApplication::translate("MainForm", "Device", 0));
+        btnOpen->setText(QApplication::translate("MainForm", "Open", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainForm", "State", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainForm", "\320\241\321\202\321\200\320\260\320\275\320\270\321\206\320\260", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainForm", "Widget", 0));
     } // retranslateUi
 
 };

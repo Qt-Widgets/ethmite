@@ -2,7 +2,8 @@ import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
-
+import QtQuick.Layouts 1.1
+import QtGraphicalEffects 1.0
 
 Item {
     id: widget
@@ -10,6 +11,10 @@ Item {
     y: 0
     width: 400
     height: 200
+    property color colorPanel: Qt.rgba(0.9, 0.9, 1.0)
+    property color colorBorder: "black"
+    property int widthBorder: 2
+    property int radiusBorder: 8
 
     function setChannelState(index, state, label, value) {
         switch(state) {
@@ -31,7 +36,7 @@ Item {
         }
 
         repeater.itemAt(index).heightBar = 1 + value * (row.height - 1);
-        repeater.itemAt(index).textBar = label;
+        repeater.itemAt(index).textBar = ("0" + label).slice(-2);
     }
 
     function setTime(value) {
@@ -88,43 +93,48 @@ Item {
         setLla(lat, lon, alt);
     }
 
-    Column {
-        x: 0
-        y: 0
-        width: parent.width
-        height: parent.height
-        spacing: 0
+    ColumnLayout {
+        anchors.fill: parent
+//        spacing: widget.radiusBorder
+        anchors.margins: widget.radiusBorder
 
-        Row {
-            x: 0
-            y: 0
-            width: parent.width
-            height: parent.height / 2
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.preferredHeight: parent.height * 0.5
+            anchors.margins: widget.radiusBorder
 
             property int itemCount: 3
             property int itemWidth: (width - spacing * itemCount) / itemCount
 
-            spacing: 1 + 0.1 * width / itemCount
-            Item {
+            spacing: widget.radiusBorder
+
+            Rectangle {
                 id: radar
                 property int itemCount: 24
                 property color colorNet: Qt.rgba(0.0, 0.0, 0.0, 1.0)
-                x: 0
-                y: 0
-                width: parent.itemWidth
-                height: parent.height
-                antialiasing: true
+
+                border.color: widget.colorBorder
+                border.width: widget.widthBorder
+                radius: widget.radiusBorder
+                color: widget.colorPanel
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
                 Canvas {
                     id: canvas
                     readonly property real rscale0: 0.14644661
                     readonly property real rscale1: 1 - rscale0
+
                     anchors.fill: parent
+                    anchors.margins: widget.radiusBorder
+
                     onPaint: {
                         var ctx = canvas.getContext('2d');
                         ctx.lineWidth = 1.0;
                         ctx.strokeStyle = radar.colorNet;
-
+                        ctx.fillStyle = "white"
                         ctx.beginPath();
 
                         ctx.moveTo(width * rscale0, height * rscale0);
@@ -141,7 +151,7 @@ Item {
 
                         ctx.ellipse(1, 1, width - 2, height - 2);
                         ctx.ellipse(width * 0.25, height * 0.25, width * 0.5, height * 0.5);
-
+                        ctx.fill();
                         ctx.stroke();
                     }
 
@@ -155,9 +165,9 @@ Item {
                         property real posY: Math.random() - 0.5
                         property color colorValue: (Math.random() > 0.5) ? "green" : "yellow"
                         property bool isVisible: (Math.random() > 0.5)
-                        x: (radar.width  - width ) * 0.5 + posX * radar.width
-                        y: (radar.height - height) * 0.5 + posY * radar.height
-                        width: radar.width * 0.1
+                        x: canvas.x + (canvas.width  - width ) * 0.5 + posX * canvas.width
+                        y: canvas.y + (canvas.height - height) * 0.5 + posY * canvas.height
+                        width: canvas.width * 0.1
                         height: width
                         radius: width
                         color: colorValue
@@ -167,17 +177,19 @@ Item {
 
 //                MouseArea {
 //                    anchors.fill: parent
-//                    onClicked: setRadarItem(Math.floor(Math.random() * 23), (Math.random() - 0.5) * Math.PI, 2.0 * Math.random() * Math.PI)
+//                    onClicked: canvasWorld.requestPaint();//setRadarItem(Math.floor(Math.random() * 23), (Math.random() - 0.5) * Math.PI, 2.0 * Math.random() * Math.PI)
 //                }
             }
 
-            Item {
+            Rectangle {
                 id: world
-                x: 0
-                y: 0
-                width: parent.itemWidth
-                height: parent.height
-                antialiasing: true
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                border.color: widget.colorBorder
+                border.width: widget.widthBorder
+                radius: widget.radiusBorder
+                color: widget.colorPanel
 
                 property real locX: Math.random() - 0.5
                 property real locY: Math.random() - 0.5
@@ -187,18 +199,28 @@ Item {
 
                 Image {
                     id: map
-                    source: "world.png"
                     anchors.fill: parent
+                    anchors.margins: widget.radiusBorder
+                    smooth: true
+                    source: "world.png"
+                    visible: false
+                }
+
+                OpacityMask {
+                    anchors.fill: map
+//                    source: map
+                    maskSource: map
                 }
 
                 Canvas {
                     id: canvasWorld
                     anchors.fill: parent
-
+                    anchors.margins: widget.radiusBorder
                     onPaint: {
                         var ctx = canvasWorld.getContext('2d');
                         ctx.lineWidth = 1.0;
-                        ctx.strokeStyle = Qt.rgba(0.9, 0.0, 0.0, 0.8);
+                        ctx.globalCompositeOperation = "xor";
+                        ctx.strokeStyle = Qt.rgba(0.9, 0.0, 0.0, 0.8);//"transparency";//
 
                         ctx.beginPath();
 
@@ -209,7 +231,6 @@ Item {
                         ctx.lineTo(width, height * (world.locY + 0.5));
 
                         ctx.stroke();
-                        console.log("paint");
                     }
                 }
 
@@ -220,8 +241,8 @@ Item {
                     radius: width
                     color: Qt.rgba(0.0, 0.9, 0.0, 0.8)
 
-                    x: (parent.width  - width ) * 0.5 + world.slvX * parent.width
-                    y: (parent.height - height) * 0.5 + world.slvY * parent.height
+                    x: canvasWorld.x + (canvasWorld.width  - width ) * 0.5 + world.slvX * canvasWorld.width
+                    y: canvasWorld.y + (canvasWorld.height - height) * 0.5 + world.slvY * canvasWorld.height
                     visible: world.slvVisible
                 }
 
@@ -229,47 +250,42 @@ Item {
 
             Rectangle {
                 id: rectTime
-                x: 0
-                y: 0
-                width: parent.itemWidth
-                height: parent.height
-                border.color: "black"
-                border.width: 2
-                radius: 8
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                border.color: widget.colorBorder
+                border.width: widget.widthBorder
+                radius: widget.radiusBorder
+                color: widget.colorPanel
+
                 property string lineTime: "00:00:00"
                 property string lineLat: "Ш:+0.0000"
                 property string lineLon: "Д:+0.0000"
                 property string lineAlt: "В:0.0"
                 property real textScale: 0.0833
                 property string textFont: "Consolas"
-                Column {
-                    x: 0
-                    y: 0
-                    width: parent.width
-                    height: parent.height
+                ColumnLayout {
                     anchors.fill: parent
+                    anchors.leftMargin: parent.width * 0.1
+                    spacing: -height * 0.25 + 1
+
                     Text {
                         id: textTime
                         font.family: rectTime.textFont
                         font.pointSize: rectTime.width * rectTime.textScale
                         text: rectTime.lineTime
-//                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
                     }
                     Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
                         font.family: rectTime.textFont
                         font.pointSize: rectTime.width * rectTime.textScale
                         text: rectTime.lineLat
                     }
                     Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
                         font.family: rectTime.textFont
                         font.pointSize: rectTime.width * rectTime.textScale
                         text: rectTime.lineLon
                     }
                     Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
                         font.family: rectTime.textFont
                         font.pointSize: rectTime.width * rectTime.textScale
                         text: rectTime.lineAlt
@@ -281,10 +297,13 @@ Item {
 
         Rectangle {
             id: diagram
-            x: 0
-            y: 0
-            width: parent.width
-            height: parent.height / 2
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.preferredHeight: parent.height * 0.5
+            border.color: widget.colorBorder
+            border.width: widget.widthBorder
+            radius: widget.radiusBorder
+            color: widget.colorPanel
 
             property color colorNotLocked: Qt.rgba(1.0, 1.0, 1.0, 0.0)
             property color colorDllLocked: Qt.rgba(0.5, 0.5, 0.5, 1.0)
@@ -297,27 +316,29 @@ Item {
             property int stateInfLocked: 3
 
             property int channelCount: 8
-            property int channelWidth: (width - channelSpacing * channelCount) / channelCount
             property int channelSpacing: 1 + 0.05 * width / channelCount
 
-            Row {
+            RowLayout {
                 id: row
-                x: 1 + diagram.channelSpacing * 0.5
-                width: parent.width
-                height: parent.height
                 spacing: diagram.channelSpacing
                 anchors.bottom: parent.bottom
+                anchors.fill: parent
+                anchors.margins: widget.radiusBorder
                 Repeater {
                     id: repeater
                     model: diagram.channelCount
                     property real textScale: 0.25
                     property string textFont: "Consolas"
+                    anchors.fill: parent
                     Rectangle{
                         property color colorBar: diagram.colorInfLocked
-                        property int heightBar: parent.height / (index + 1)
+                        property int heightBar: row.height / (index + 1)
                         property string textBar: "00"
-                        width: diagram.channelWidth
-                        height: heightBar
+                        Layout.fillWidth: true
+                        Layout.fillHeight: false
+                        Layout.minimumHeight: 1
+                        Layout.maximumHeight: row.height
+                        Layout.preferredHeight: heightBar
                         anchors.bottom: parent.bottom
                         color: colorBar
                         Text {
@@ -332,6 +353,16 @@ Item {
             }
         }
 
+    }
+
+    Timer {
+        interval: 1000;
+        running: true;
+        repeat: true
+        onTriggered: {
+            canvas.requestPaint();
+            canvasWorld.requestPaint();
+        }
     }
 
 }

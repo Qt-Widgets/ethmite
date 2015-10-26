@@ -107,6 +107,7 @@ typedef struct {
 } gloinf_frame;
 
 void gloinf_print(gloinf_frame *frame);
+void gloinf_save(const char *fname);
 
 #ifdef	__cplusplus
 }

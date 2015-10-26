@@ -5,15 +5,24 @@
  * Created on 7 Май 2015 г., 16:56
  */
 
+#include <QSettings>
 #include "MainForm.h"
 #include "stdio.h"
 #include "Satellite.h"
 #include "time.h"
 #include "QLed.h"
 
+const QString MainForm::DefaultSettingIp = QString("192.168.0.1");
+const QString MainForm::DefaultSettingAgl = QString("./almanac/latest.agl");
+
 MainForm::MainForm() {
     widget.setupUi(this);
-
+//    widget.tabWidget->tabBar()->hide();
+    readSettings();
+    createActions();
+    createTrayIcon();
+    trayIcon->show();
+    
     ioForm[0] = new IoForm(&com, EthInterface::CmdAddrLprsSa, 
             offsetof(EthInterface::loop_prs, level), 
             IoForm::FLOAT, 
@@ -149,21 +158,27 @@ MainForm::MainForm() {
     connect(widget.btnPlot, SIGNAL(clicked()), this, SLOT(plot()));
     connect(widget.btnSend, SIGNAL(clicked()), this, SLOT(setSatelliteIndex()));
     connect(&com, SIGNAL(readyPlot(float **)), this, SLOT(readyPlotSlot(float **)));
-
-    startTimer(200);
-
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    timerIdFast = startTimer(200);
+    timerIdSlow = startTimer(1000);
 }
 
 void MainForm::timerEvent(QTimerEvent * event) {
-    for (int i = 0; i < ChannelCount; i++) {
-        QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
-        leds[i]->setState(c);
-        setChannelState(i, (quint32)com.getStates(i), i, com.getSnr(i) * 0.02);
+    
+    if (event->timerId() == timerIdFast) {
+        for (int i = 0; i < ChannelCount; i++) {
+            QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
+            leds[i]->setState(c);
+            setChannelState(i, (quint32)com.getStates(i), i, com.getSnr(i) * 0.02);
+        }
+        setWorldSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], true);
+        setTime(com.getTime(0));
     }
     
-    setWorldSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], true);
-    
-    setTime(com.getTime(0));
+    if (event->timerId() == timerIdSlow) {
+        open();
+    }
 }
 
 void MainForm::setChannelState(qint32 index, qint32 state, qint32 label, qreal value) {
@@ -216,12 +231,12 @@ MainForm::~MainForm() {
 void MainForm::open() {
     switch (com.state()) {
         case QTcpSocket::ConnectedState     :
-            com.close();
-            widget.teLog->appendPlainText(QString("Disconnecting"));
+//            com.close();
+//            widget.teLog->appendPlainText(QString("Disconnecting"));
             break;
         case QTcpSocket::UnconnectedState   :
-            com.connectToHost("192.168.1.70", 5001);
-            widget.teLog->appendPlainText(QString("Connecting"));
+            com.connectToHost(settingIp, settingPort);
+            widget.teLog->appendPlainText(QString("Connecting to: %1:%2").arg(settingIp).arg(settingPort));
             com.clear();
             break;
         default:
@@ -242,7 +257,7 @@ void MainForm::setSatelliteIndex() {
     int c = 0;
 //    int index = widget.sbSatelliteIndex->value() - 1;
     Satellite sat;
-    sat.loadAgl("d:/tmp/agl/MCCT_150922.agl");
+    sat.loadAgl(settingAgl);
     
     for (int i = 0; i < RadarChannelCount; i++) {
         sat.setTime(time(0), i);
@@ -263,6 +278,7 @@ void MainForm::setSatelliteIndex() {
 
             printf("[%d - %d]\n", i + 1, c);
             c++;
+//            com.getStates(c)
         }
     }
 
@@ -282,5 +298,60 @@ void MainForm::setSatelliteIndex() {
 //
 //        printf("[%d - %d]\n", 22 + 1, c);
 //    }
+}
+
+
+void MainForm::createActions() {
+    showAction = new QAction(tr("Показать"), this);
+    connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+
+    hideAction = new QAction(tr("Спрятать"), this);
+    connect(hideAction, SIGNAL(triggered()), this, SLOT(hide()));
+
+    quitAction = new QAction(tr("Закрыть"), this);
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
+
+
+void MainForm::createTrayIcon() {
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(showAction);
+    trayIconMenu->addAction(hideAction);
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(quitAction);
+
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setIcon(QIcon(":/earth.png"));
+}
+
+void MainForm::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::DoubleClick:
+    case QSystemTrayIcon::MiddleClick:
+        if (isVisible()) {
+            hideAction->trigger();
+        }
+        else {
+            showAction->trigger();
+        }
+        break;
+    default:
+        ;
+    }
+}
+void MainForm::setVisible(bool visible) {
+    hideAction->setEnabled(visible);
+    showAction->setEnabled(!visible);
+    QMainWindow::setVisible(visible);
+}
+
+void MainForm::readSettings() {
+    QSettings settings("ethmite.ini", QSettings::IniFormat);
+
+    settingIp = settings.value("ip", DefaultSettingIp).toString();
+    settingPort = (quint16)settings.value("port", DefaultSettingPort).toUInt();
+    settingAgl = settings.value("agl", DefaultSettingAgl).toString();
 }
 
