@@ -17,7 +17,10 @@ EthInterface::EthInterface() {
         
     plot[0] = new float[PlotLength];
     plot[1] = new float[PlotLength];
+
     for (int i = 0; i < ChannelCount; i++) {
+        
+#ifdef DEBUG_LOGFILES
         frsa[i].setFileName(QString("%1/rsa.txt").arg(i));
         frsa[i].open(QFile::WriteOnly | QFile::Text);
         srsa[i].setDevice(&frsa[i]);
@@ -41,21 +44,26 @@ EthInterface::EthInterface() {
         fiha[i].setFileName(QString("%1/iha.txt").arg(i));
         fiha[i].open(QFile::WriteOnly | QFile::Text);
         siha[i].setDevice(&fiha[i]);
-        
+#endif        
         locked[i] = false;
         states[i] = 0;
         snr[i] = 0.0;
         time[i] = 0;
+        id[i] = 0;
     }
     
+#ifdef DEBUG_LOGFILES
     fsol.setFileName("sol.txt");
     fsol.open(QFile::WriteOnly | QFile::Text);
     ssol.setDevice(&fsol);
+#endif
     
     connect(this, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
 }
 
 EthInterface::~EthInterface() {
+
+#ifdef DEBUG_LOGFILES
     for (int i = 0; i < ChannelCount; i++) {
         frsa[i].close();
         frha[i].close();
@@ -65,14 +73,63 @@ EthInterface::~EthInterface() {
         fiha[i].close();
     }
     fsol.close();
+#endif
 }
+
+void EthInterface::findFreeChannels() {
+    freeChannelsCount = 0;
+    for (int i = 0; i < ChannelCount; i++) {
+        if ((states[i] & 3) != 3) {
+            freeChannels[freeChannelsCount] = i;
+            freeChannelsCount++;
+        }
+    }
+}
+
+int EthInterface::getFreeChannel(int id) {
+    int channel = -1;
+    
+    for (int i = 0; i < ChannelCount; i++) {
+        if ((this->id[i] == id) && ((states[i] & 3) == 3)) {
+            channel = -2;
+            break;
+        }
+    }
+    
+    if (channel == -1) {
+        for (int i = 0; i < freeChannelsCount; i++) {
+            if ((freeChannels[i] < ChannelCount) && (freeChannels[i] >= 0) && (this->id[freeChannels[i]] == id)) {
+                channel = freeChannels[i];
+                freeChannels[i] = -1;
+                break;
+            }
+        }
+
+        if (channel == -1) {
+            for (int i = 0; i < ChannelCount; i++) {
+                if ((freeChannels[i] < ChannelCount) && (freeChannels[i] >= 0)) {
+                    channel = freeChannels[i];
+                    freeChannels[i] = -1;
+                    break;
+                }
+            }
+        }
+    }
+    
+    return channel;
+}
+
 
 bool EthInterface::isLocked(int channel) {
     return locked[channel];
 }
 
+int EthInterface::getId(int channel) {
+    return id[channel];
+}
+
 int EthInterface::getStates(int channel) {
-    return states[channel];
+    return states[channel] & 0x7;
 }
 
 float EthInterface::getSnr(int channel) {
@@ -84,6 +141,8 @@ int EthInterface::getTime(int channel) {
 }
 
 void EthInterface::clear() {
+
+#ifdef DEBUG_LOGFILES
     for (int i = 0; i < ChannelCount; i++) {
         frsa[i].resize(0);
         frha[i].resize(0);
@@ -93,10 +152,17 @@ void EthInterface::clear() {
         fiha[i].resize(0);
     }
     fsol.resize(0);
+#endif
+    
 }
 
 void EthInterface::readyReadSlot() {
     QDataStream ds(this);
+
+    if (ds.status() != QDataStream::Ok) {
+        ds.resetStatus();
+    }
+    
 //    ds.setByteOrder(QDataStream::BigEndian);
     quint32 value;
     
@@ -104,11 +170,8 @@ void EthInterface::readyReadSlot() {
         ds >> value;
         
         bool is_packet = acceptData(value);
-//        printf("0x%08X ", value);
         
         if (is_packet) {
-//            printf("packet 0x%08X : 0x%08X\n", buffer[0], buffer[1]);
-            fflush(stdout);
             execCommand();
         }
         
@@ -121,7 +184,6 @@ void EthInterface::execCommand() {
     loop_car *lcar = (loop_car *)&buffer[2];
     info     *inf  = (info     *)&buffer[2];
     solution *slv  = (solution *)&buffer[2];
-//    int16_t *data = (int16_t *)&buffer[2];
 
     static int iprssa[ChannelCount];
     static int iprsha[ChannelCount];
@@ -130,56 +192,76 @@ void EthInterface::execCommand() {
     
     switch (buffer[1]) {
         case CmdAddrLprsSa: 
-            if (lprs->id < ChannelCount && lprs->id >= 0 && iprssa[lprs->id] != lprs->index) {
-                iprssa[lprs->id] = lprs->index;
-                srsa[lprs->id] 
-                        << lprs->index << '\t' 
-                        << QString::number(lprs->sat[0], 'g', 12) << '\t' 
-                        << QString::number(lprs->sat[1], 'g', 12) << '\t' 
-                        << QString::number(lprs->sat[2], 'g', 12) << '\t' 
-                        << QString::number(lprs->prediction, 'g', 12) << '\t' 
-                        << QString::number(lprs->range, 'g', 12) << '\n';
-                srsa[lprs->id].flush();
+            if (lprs->id < ChannelCount && lprs->id >= 0) {
+
+#ifdef DEBUG_LOGFILES
+                if (iprssa[lprs->id] != lprs->index) {
+                    iprssa[lprs->id] = lprs->index;
+                    srsa[lprs->id] 
+                            << lprs->index << '\t' 
+                            << QString::number(lprs->sat[0], 'g', 12) << '\t' 
+                            << QString::number(lprs->sat[1], 'g', 12) << '\t' 
+                            << QString::number(lprs->sat[2], 'g', 12) << '\t' 
+                            << QString::number(lprs->prediction, 'g', 12) << '\t' 
+                            << QString::number(lprs->range, 'g', 12) << '\n';
+                    srsa[lprs->id].flush();
+                }
+#endif
+                
+                id[lprs->id] = lprs->number;
                 locked[lprs->id] = (bool)lprs->locked;
                 states[lprs->id] = lprs->locked ? states[lprs->id] | 0x01 : states[lprs->id] & 0xFE;
                 time[lprs->id] = lprs->index;
             }
             break;
         case CmdAddrLprsHa: 
+            
+#ifdef DEBUG_LOGFILES
             if (lprs->id < ChannelCount && lprs->id >= 0 && iprsha[lprs->id] != lprs->index) {
                 iprsha[lprs->id] = lprs->index;
                 srha[lprs->id] << iprsha[lprs->id] << '\t' << QString::number(lprs->range, 'g', 12) << '\n';
                 srha[lprs->id].flush();
             }
-            fflush(stdout);
+#endif
             break;
-        case CmdAddrLcarSa: 
-            if (lcar->id < ChannelCount && lcar->id >= 0 && icarsa[lcar->id] != lcar->index) {
-                icarsa[lcar->id] = lcar->index;
-                sfsa[lcar->id] << icarsa[lcar->id] << '\t' << QString::number((qulonglong)lcar->phase) << '\n';
-                sfsa[lcar->id].flush();
+        case CmdAddrLcarSa:
+            if (lcar->id < ChannelCount && lcar->id >= 0) {
+
+#ifdef DEBUG_LOGFILES
+                if (icarsa[lcar->id] != lcar->index) {
+                    icarsa[lcar->id] = lcar->index;
+                    sfsa[lcar->id] << icarsa[lcar->id] << '\t' << QString::number((qulonglong)lcar->phase) << '\n';
+                    sfsa[lcar->id].flush();
+                }
+#endif
                 states[lcar->id] = lcar->locked ? states[lcar->id] | 0x02 : states[lcar->id] & 0xFD;
                 snr[lcar->id] = lcar->snr < 1.0 ? 0.0 : 10.0 * log10f(lcar->snr * 500.0);
             }
             break;
         case CmdAddrLcarHa: 
+#ifdef DEBUG_LOGFILES
             if (lcar->id < ChannelCount && lcar->id >= 0 && icarha[lcar->id] != lcar->index) {
                 icarha[lcar->id] = lcar->index;
                 sfha[lcar->id] << icarha[lcar->id] << '\t' << QString::number((qulonglong)lcar->phase) << '\n';
                 sfha[lcar->id].flush();
             }
+#endif
             break;
         case CmdAddrInfoSa:
             if (inf->id < ChannelCount && inf->id >= 0) {
+#ifdef DEBUG_LOGFILES
                 sisa[inf->id] << QString("0x%1,    ").arg((uint)inf->inf[0], 8, 16, QChar('0'));
                 sisa[inf->id] << QString("0x%1,    ").arg((uint)inf->inf[1], 8, 16, QChar('0'));
                 sisa[inf->id] << QString("0x%1,    ").arg((uint)inf->inf[2], 8, 16, QChar('0'));
                 sisa[inf->id] << QString("0x%1,    ").arg((uint)inf->inf[3], 8, 16, QChar('0'));
                 sisa[inf->id] << QString("// %1:\n" ).arg((uint)(inf->inf[0] >> 27), 2, 10, QChar(' '));
                 sisa[inf->id].flush();
+#endif
+                states[inf->id] = inf->locked ? states[inf->id] | 0x04 : states[inf->id] & 0xFB;
             }
             break;
         case CmdAddrInfoHa:
+#ifdef DEBUG_LOGFILES
             if (inf->id < ChannelCount && inf->id >= 0) {
                 siha[inf->id] << QString("0x%1,    ").arg((uint)inf->inf[0], 8, 16, QChar('0'));
                 siha[inf->id] << QString("0x%1,\n"  ).arg((uint)inf->inf[1], 8, 16, QChar('0'));
@@ -187,16 +269,18 @@ void EthInterface::execCommand() {
                 siha[inf->id] << QString("0x%1,\n"  ).arg((uint)inf->inf[3], 8, 16, QChar('0'));
                 siha[inf->id].flush();
             }
+#endif
             break;
         case CmdAddrFrame:
             acceptFrame();
             break;
         case CmdAddrSlv:
-//            printf("%d\t%f\n", slv->count, slv->err);
-//            printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
-//            for (int i = 0; i < slv->count; i++) {
-//                printf("%10d\t%12.4f\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->ms[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
-//            }
+#ifdef DEBUG_LOGFILES
+            printf("%d\t%f\n", slv->count, slv->err);
+            printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
+            for (int i = 0; i < slv->count; i++) {
+                printf("%10d\t%12.4f\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12g\n", slv->s[i], slv->ms[i], slv->p[i], slv->rng[i], slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]);
+            }
             ssol << slv->count << '\t' << slv->s[0] << '\t' <<
                     QString::number(slv->err, 'g', 12) << '\t' <<
                     QString::number(slv->dt , 'g', 12) << '\t' <<
@@ -204,6 +288,7 @@ void EthInterface::execCommand() {
                     QString::number(slv->loc[1] , 'g', 12) << '\t' <<
                     QString::number(slv->loc[2] , 'g', 12) << '\n';
             ssol.flush();
+#endif
             setSolution(slv->loc[0], slv->loc[1], slv->loc[2], slv->dt);
             break;
 //        default: 
@@ -261,6 +346,10 @@ void EthInterface::xyz2lla(double *xyz, double *lla) {
 
 void EthInterface::sendData(const uint32_t value, int32_t *index) {
     QDataStream ds(this);
+
+    if (ds.status() != QDataStream::Ok) {
+        ds.resetStatus();
+    }
     
     if (value == Seop) {
         ds << Rseop0;
@@ -286,6 +375,10 @@ void EthInterface::sendPacket(uint32_t *data, int dlen) {
     uint32_t cs = crc(data, 0, dlen);
     QDataStream ds(this);
     
+    if (ds.status() != QDataStream::Ok) {
+        ds.resetStatus();
+    }
+    
     ds << Seop;
 
     for (int i = 0; i < dlen; i++) {
@@ -308,9 +401,11 @@ void EthInterface::acceptPlot() {
     float *data = (float *)&buffer[2];
     p *= PlotSamplesInPacket;
 
-    for (int i = 0; i < PlotSamplesInPacket; ++i) {
-        plot[0][p + i] = data[2 * i];
-        plot[1][p + i] = data[2 * i + 1];
+    if (p + PlotSamplesInPacket <= PlotLength) {
+        for (int i = 0; i < PlotSamplesInPacket; ++i) {
+            plot[0][p + i] = data[2 * i];
+            plot[1][p + i] = data[2 * i + 1];
+        }
     }
     
     if (buffer[1] - CmdAddrPlot + 1 == PlotPacketCount) {

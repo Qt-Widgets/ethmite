@@ -18,7 +18,6 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
@@ -68,7 +67,6 @@ public:
     QVBoxLayout *verticalLayout_7;
     QQuickWidget *quickWidget;
     QPlainTextEdit *teLog;
-    QMenuBar *menubar;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainForm)
@@ -242,10 +240,6 @@ public:
         horizontalLayout->addWidget(widget_2);
 
         MainForm->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(MainForm);
-        menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 620, 26));
-        MainForm->setMenuBar(menubar);
         statusbar = new QStatusBar(MainForm);
         statusbar->setObjectName(QStringLiteral("statusbar"));
         MainForm->setStatusBar(statusbar);

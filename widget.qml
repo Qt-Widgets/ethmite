@@ -76,7 +76,7 @@ Item {
 
         repRadar.itemAt(index).posX = xx;
         repRadar.itemAt(index).posY = yy;
-        repRadar.itemAt(index).colorValue = "green";//(Math.random() > 0.5) ? "green" : "yellow";
+        repRadar.itemAt(index).colorValue = diagram.colorInfLocked;//(Math.random() > 0.5) ? "green" : "yellow";
         repRadar.itemAt(index).isVisible = isVisible;
 
     }
@@ -312,8 +312,8 @@ Item {
 
             property int stateNotLocked: 0
             property int stateDllLocked: 1
-            property int statePllLocked: 2
-            property int stateInfLocked: 3
+            property int statePllLocked: 3
+            property int stateInfLocked: 7
 
             property int channelCount: 8
             property int channelSpacing: 1 + 0.05 * width / channelCount

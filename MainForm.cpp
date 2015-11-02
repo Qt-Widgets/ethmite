@@ -18,6 +18,9 @@ const QString MainForm::DefaultSettingAgl = QString("./almanac/latest.agl");
 MainForm::MainForm() {
     widget.setupUi(this);
 //    widget.tabWidget->tabBar()->hide();
+
+    labelInfo = new QLabel(widget.statusbar);
+    widget.statusbar->addWidget(labelInfo, 1);
     readSettings();
     createActions();
     createTrayIcon();
@@ -161,7 +164,7 @@ MainForm::MainForm() {
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
     timerIdFast = startTimer(200);
-    timerIdSlow = startTimer(1000);
+    timerIdSlow = startTimer(3000);
 }
 
 void MainForm::timerEvent(QTimerEvent * event) {
@@ -170,7 +173,7 @@ void MainForm::timerEvent(QTimerEvent * event) {
         for (int i = 0; i < ChannelCount; i++) {
             QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
             leds[i]->setState(c);
-            setChannelState(i, (quint32)com.getStates(i), i, com.getSnr(i) * 0.02);
+            setChannelState(i, (quint32)com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
         }
         setWorldSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], true);
         setTime(com.getTime(0));
@@ -178,6 +181,9 @@ void MainForm::timerEvent(QTimerEvent * event) {
     
     if (event->timerId() == timerIdSlow) {
         open();
+        setSatelliteIndex();
+        QString s1 = (com.state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
+        labelInfo->setText(QString("Соединение: %1 \t Обмен: %2").arg(s1).arg("Да"));
     }
 }
 
@@ -207,7 +213,7 @@ void MainForm::setWorldLocation(qreal lat, qreal lon) {
             Q_ARG(QVariant, lon) 
     );
 }
-    
+
 void MainForm::setWorldSolution(qreal lat, qreal lon, qreal alt, boolean isVisible) {
     QObject *obj = (QObject *)widget.quickWidget->rootObject();
     QMetaObject::invokeMethod(obj, "setWorldSolution", 
@@ -253,51 +259,72 @@ void MainForm::readyPlotSlot(float **plot) {
     plotForm.setData(plot, 512);
 }
 
+void MainForm::setChannel(uint32_t channel, uint32_t id, uint32_t carrier) {
+    EthInterface::command cmd;
+    if (com.isOpen() && com.state() == QTcpSocket::ConnectedState && com.isValid() && com.isWritable()) {
+        cmd.cmd  = EthInterface::CmdWrite;
+        cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
+
+        cmd.addr = (EthInterface::CmdAddrLprsSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = id;
+        cmd.offset = offsetof(EthInterface::loop_prs, number) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(EthInterface::loop_prs, error) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+
+        cmd.addr = (EthInterface::CmdAddrLprsHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = id;
+        cmd.offset = offsetof(EthInterface::loop_prs, number) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(EthInterface::loop_prs, error) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+
+        cmd.addr = (EthInterface::CmdAddrLcarSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = carrier;
+        cmd.offset = offsetof(EthInterface::loop_car, code) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(EthInterface::loop_car, error) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+
+        cmd.addr = (EthInterface::CmdAddrLcarHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = carrier;
+        cmd.offset = offsetof(EthInterface::loop_car, code) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(EthInterface::loop_car, error) / sizeof(uint32_t);
+        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+    }
+}
+
 void MainForm::setSatelliteIndex() {
     int c = 0;
-//    int index = widget.sbSatelliteIndex->value() - 1;
     Satellite sat;
     sat.loadAgl(settingAgl);
     
-    for (int i = 0; i < RadarChannelCount; i++) {
-        sat.setTime(time(0), i);
-        
-        setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
-        
-        if ((sat.getAerv()[1] * 180 / M_PI > 15) && (c < com.ChannelCount)) {
-            double f = sat.getFrequencyL1Current(i);
-            f -= 1580000000.0;
-            f = f * 4294967296.0 / 100000000.0;
-            ioForm[2]->getLineEdit()->setText(QString::number((int)f));
-            ioForm[2]->setChannel(c);
-            ioForm[2]->set();
+    com.findFreeChannels();
+    
+    for (int i = 0; i < sat.getCount(); i++) {
+        if (sat.isValid(i)) {
+            sat.setTime(time(0), i);
 
-            ioForm[8]->getLineEdit()->setText(QString::number((int)f));
-            ioForm[8]->setChannel(c);
-            ioForm[8]->set();
+            setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
 
-            printf("[%d - %d]\n", i + 1, c);
-            c++;
-//            com.getStates(c)
+            if (sat.isValid(i) && (sat.getAerv()[1] * 180.0 / M_PI > 15.0)) {
+                double f = sat.getFrequencyL1Current(i);
+                f -= 1575000000.0;
+                f = f * 4294967296.0 / 100000000.0;
+                c = com.getFreeChannel(i + 1);
+                if (c >= 0) {
+//                    printf("setchannel: %d - %d\n", c, i + 1);
+                    setChannel((uint32_t)c, (uint32_t)(i + 1), (uint32_t)f);
+                }
+            }
         }
     }
 
-//    for (int c = 0; c < com.ChannelCount; c++) {
-//        sat.setTime(time(0), 22);
-//
-//        double f = sat.getFrequencyL1Current(22);
-//        f -= 1580000000.0;
-//        f = f * 4294967296.0 / 100000000.0;
-//        ioForm[2]->getLineEdit()->setText(QString::number((int)f));
-//        ioForm[2]->setChannel(c);
-//        ioForm[2]->set();
-//
-//        ioForm[8]->getLineEdit()->setText(QString::number((int)f));
-//        ioForm[8]->setChannel(c);
-//        ioForm[8]->set();
-//
-//        printf("[%d - %d]\n", 22 + 1, c);
-//    }
 }
 
 

@@ -8,6 +8,8 @@
 #ifndef ETHINTERFACE_H
 #define	ETHINTERFACE_H
 
+//#define DEBUG_LOGFILES 1
+
 #include <QFile>
 #include <QTextStream>
 #include <QTcpSocket>
@@ -57,6 +59,7 @@ public:
         double range;
         double prediction;
         double sat[3];
+        float power;
     } loop_prs;
     
 #pragma pack (1)
@@ -109,6 +112,7 @@ typedef struct {
 #pragma pack (1)
     typedef struct info_tag {
         uint32_t id;
+        int32_t locked;
         uint32_t inf[4];
     } info;
     
@@ -117,8 +121,11 @@ typedef struct {
     void sendPacket(uint32_t *data, int dlen);
     void clear();
     bool isLocked(int channel);
+    int getId(int channel);
     int getStates(int channel);
     int getTime(int channel);
+    void findFreeChannels();
+    int getFreeChannel(int id);
     float getSnr(int channel);
     double *getLla();
     
@@ -139,7 +146,8 @@ private:
 
     uint32_t buffer[BufferLength];
     float *plot[2];
-    
+
+#ifdef DEBUG_LOGFILES
     QFile frsa[ChannelCount];
     QFile frha[ChannelCount];
     QFile ffsa[ChannelCount];
@@ -155,9 +163,14 @@ private:
     QTextStream sisa[ChannelCount];
     QTextStream siha[ChannelCount];
     QTextStream ssol;
+#endif    
     
     bool locked[ChannelCount];
     int states[ChannelCount];
+    int id[ChannelCount];
+    int freeChannels[ChannelCount];
+    int freeChannelsCount;
+    
     float snr[ChannelCount];
     int time[ChannelCount];
     double xyzt[4];

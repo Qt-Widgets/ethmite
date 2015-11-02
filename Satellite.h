@@ -31,7 +31,10 @@ public:
     double* getAerv();
     void setLocationLla(double latitude, double longitude, double altitude);
     void setTime(double value, int index);
+    bool isValid(int index);
+    int getCount();
 private:
+    int count;
     static const double SpeedOfLight        = 299792458.0;
     
     static const int    AglCount            = 32;

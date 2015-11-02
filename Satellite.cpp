@@ -13,14 +13,23 @@
 #include "time.h"
 
 Satellite::Satellite() {
+    count = 0;
     setLocationLla(
             44.98 * M_PI / 180.0, 
             41.12 * M_PI / 180.0, 
             213.0
         );
+    
+    for (int i = 0; i < AglCount; i++) {
+        agl[i].valid = 0;
+    }
 }
 
 Satellite::~Satellite() {
+}
+
+int Satellite::getCount() {
+    return count;
 }
 
 void Satellite::loadAgl(const QString fileName) {
@@ -30,6 +39,8 @@ void Satellite::loadAgl(const QString fileName) {
     if (!isOpen) {
         return;
     }
+    
+    count = 0;
     
     QTextStream txt(&file);
     QString line[3];
@@ -138,6 +149,7 @@ bool Satellite::appendAgl(const QString line[3]) {
             s->sec      = s->tlam - (double)(s->hr * 3600 + s->minute * 60);            
             
             setTime(time(0), index);
+            count++;
         }
     }
     return result;
@@ -152,21 +164,26 @@ void Satellite::setTime(double value, int index) {
     asc2aerv(locationGasc, s->state, aerv);
     setFrequency(index);
     
-    printf("[%02d]\t", index + 1);
-    printf("lat = %7.2f\t", lla[0] * 180 / M_PI);
-    printf("lon = %7.2f\t", lla[1] * 180 / M_PI);
-    printf("alt = %8.2f\t", lla[2] / 1000.0);
-    printf("azm = %7.2f\t", aerv[0] * 180.0 / M_PI);
-    printf("elv = %7.2f\t", aerv[1] * 180.0 / M_PI);
-    printf("rng = %8.2f\t", aerv[2] / 1000.0);
-    printf("vel = %6.3f\t", aerv[3] / 1000.0);
-    printf("frq = %8.3f\t", getFrequencyL1(index) / 1000000.0);
-    printf("dpr = %8.3f\n", getFrequencyL1Doppler(index) / 1000.0);
-    fflush(stdout);
+//    printf("[%02d]\t", index + 1);
+//    printf("lat = %7.2f\t", lla[0] * 180 / M_PI);
+//    printf("lon = %7.2f\t", lla[1] * 180 / M_PI);
+//    printf("alt = %8.2f\t", lla[2] / 1000.0);
+//    printf("azm = %7.2f\t", aerv[0] * 180.0 / M_PI);
+//    printf("elv = %7.2f\t", aerv[1] * 180.0 / M_PI);
+//    printf("rng = %8.2f\t", aerv[2] / 1000.0);
+//    printf("vel = %6.3f\t", aerv[3] / 1000.0);
+//    printf("frq = %8.3f\t", getFrequencyL1(index) / 1000000.0);
+//    printf("dpr = %8.3f\n", getFrequencyL1Doppler(index) / 1000.0);
+//    fflush(stdout);
 }
 
 void Satellite::setFrequency(int index) {
     kstruct *s = &agl[index];
     frequencyL1[index] = FrequencyL1 + s->nfreq * FrequencyL1Delta;
     frequencyL1Doppler[index] = -frequencyL1[index] * aerv[3] / SpeedOfLight;
+}
+
+bool Satellite::isValid(int index) {
+    kstruct *s = &agl[index];
+    return (s->valid > 0);
 }

@@ -74,12 +74,12 @@ void gloinf_print(gloinf_frame *frame) {
         framebit = (char)(1 << index);
         if (!(frameset & framebit)) {
             memcpy(&almanac[index], frame, sizeof(gloinf_frame));
-            gloinf_print_frame(stdout, frame);
+//            gloinf_print_frame(stdout, frame);
             frameset |= framebit;
         }
         
         if (frameset == 0x1F) {
-            puts("ENDOFFRAME");
+//            puts("ENDOFFRAME");
             gloinf_save("latest.agl");
             frameset = 0;
         }

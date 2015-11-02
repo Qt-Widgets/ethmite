@@ -15,7 +15,8 @@
 #include "PlotForm.h"
 #include "IoForm.h"
 #include "QLed.h"
-    
+#include <QMenu>
+
 class MainForm : public QMainWindow {
     Q_OBJECT
 public:
@@ -47,6 +48,7 @@ private:
     QAction *showAction;
     QAction *hideAction;
     QAction *quitAction;
+    QLabel *labelInfo;
     
     void timerEvent(QTimerEvent * event);
     void setChannelState(qint32 index, qint32 state, qint32 label, qreal value);
@@ -57,6 +59,7 @@ private:
     void createActions();
     void createTrayIcon();
     void readSettings();
+    void setChannel(uint32_t channel, uint32_t id, uint32_t carrier);
     
 private slots:
     void open();
