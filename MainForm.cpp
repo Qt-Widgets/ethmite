@@ -176,7 +176,12 @@ void MainForm::timerEvent(QTimerEvent * event) {
             setChannelState(i, (quint32)com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
         }
         setWorldSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], true);
-        setTime(com.getTime(0));
+        for (int i = 0; i < ChannelCount; i++) {
+            if (com.getStates(i) == 7) {
+                setTime(com.getTime(i));
+                break;
+            }
+        }
     }
     
     if (event->timerId() == timerIdSlow) {
