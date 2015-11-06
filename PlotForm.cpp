@@ -101,14 +101,14 @@ void PlotForm::setDataLen(int value) {
 
 void PlotForm::setData(float **data, int len) {
     
-//    FILE *f;
-//    f = fopen("d:/tmp/ndata.csv", "a");
+    FILE *f;
+    f = fopen("d:/tmp/ndata.csv", "a");
     for (int i = 0; i < len && i < m_data_len; ++i) {
         m_data[1][i] = (double)(data[0][i]);
         m_data[2][i] = (double)(data[1][i]);
-//        fprintf(f, "%lf\t%lf\n", m_data[1][i], m_data[2][i]);
+        fprintf(f, "%lf\t%lf\n", m_data[1][i], m_data[2][i]);
     }
-//    fclose(f);
+    fclose(f);
     
     curve[0].setRawSamples(m_data[0], m_data[1], m_data_len);
 //    widget.qwtPlot->setAxisScale(QwtPlot::xBottom, curve.minXValue(), curve.maxXValue());
