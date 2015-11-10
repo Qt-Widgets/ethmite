@@ -175,6 +175,9 @@ void MainForm::timerEvent(QTimerEvent * event) {
             leds[i]->setState(c);
             setChannelState(i, (quint32)com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
         }
+//        int64_t lla[3] = {-1, -1, -1};
+//        double *dlla = (double *)lla;
+//        setWorldSolution(dlla[0], dlla[1], dlla[2], true);
         setWorldSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], true);
         for (int i = 0; i < ChannelCount; i++) {
             if (com.getStates(i) == 7) {
@@ -220,6 +223,11 @@ void MainForm::setWorldLocation(qreal lat, qreal lon) {
 }
 
 void MainForm::setWorldSolution(qreal lat, qreal lon, qreal alt, boolean isVisible) {
+
+    if (lat != lat || lon != lon || lat != lat) {
+        return;
+    }
+    
     QObject *obj = (QObject *)widget.quickWidget->rootObject();
     QMetaObject::invokeMethod(obj, "setWorldSolution", 
             Q_ARG(QVariant, lat), 

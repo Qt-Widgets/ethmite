@@ -18,7 +18,7 @@ INCPATH       = -I. -I../glonass -Id:/usr/qt/5.5/mingw492_32/include/qwt -IC:/Qw
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads
 LIBS        =        -LC:/Qwt-6.1.2/lib -lqwt -LD:/usr/qt/5.5/mingw492_32/lib -lQt5QuickWidgets -lQt5Quick -lQt5Declarative -lQt5Svg -lQt5Widgets -lQt5Gui -lQt5Qml -lQt5Network -lQt5Script -lQt5Core release/ethmite_res.o 
-QMAKE         = D:/usr/qt/5.5/mingw492_32/bin/qmake.exe
+QMAKE         = d:/usr/qt/5.5/mingw492_32/bin/qmake.exe
 IDC           = idc
 IDL           = midl
 ZIP           = 
@@ -543,9 +543,6 @@ release/moc_MainForm.cpp: ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSys
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qitemselectionmodel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMainWindow \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmainwindow.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMenuBar \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenubar.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenu.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QPlainTextEdit \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qplaintextedit.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qtextedit.h \
@@ -564,7 +561,6 @@ release/moc_MainForm.cpp: ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSys
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qabstractbutton.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QScrollArea \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qscrollarea.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpacerItem \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpinBox \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qspinbox.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QStatusBar \
@@ -647,6 +643,7 @@ release/moc_MainForm.cpp: ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSys
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qlabel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QLineEdit \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qlineedit.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpacerItem \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QToolButton \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		d:/usr/qt/5.5/mingw492_32/include/qwt/qwt_plot.h \
@@ -657,6 +654,8 @@ release/moc_MainForm.cpp: ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSys
 		ui_IoForm.h \
 		QLed.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/QColor \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMenu \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenu.h \
 		MainForm.h
 	'D:\usr\qt\5.5\mingw492_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/usr/qt/5.5/mingw492_32/mkspecs/win32-g++ -ID:/work/pc/ethmite -ID:/work/pc/glonass -Id:/usr/qt/5.5/mingw492_32/include/qwt -IC:/Qwt-6.1.2/include -ID:/usr/qt/5.5/mingw492_32/include -ID:/usr/qt/5.5/mingw492_32/include/QtQuickWidgets -ID:/usr/qt/5.5/mingw492_32/include/QtQuick -ID:/usr/qt/5.5/mingw492_32/include/QtDeclarative -ID:/usr/qt/5.5/mingw492_32/include/QtSvg -ID:/usr/qt/5.5/mingw492_32/include/QtWidgets -ID:/usr/qt/5.5/mingw492_32/include/QtGui -ID:/usr/qt/5.5/mingw492_32/include/QtANGLE -ID:/usr/qt/5.5/mingw492_32/include/QtQml -ID:/usr/qt/5.5/mingw492_32/include/QtNetwork -ID:/usr/qt/5.5/mingw492_32/include/QtScript -ID:/usr/qt/5.5/mingw492_32/include/QtCore MainForm.h -o release/moc_MainForm.cpp
 
@@ -1260,9 +1259,6 @@ release/main.o: main.cpp ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QAppl
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qitemselectionmodel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMainWindow \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmainwindow.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMenuBar \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenubar.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenu.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QPlainTextEdit \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qplaintextedit.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qtextedit.h \
@@ -1281,7 +1277,6 @@ release/main.o: main.cpp ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QAppl
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qabstractbutton.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QScrollArea \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qscrollarea.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpacerItem \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpinBox \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qspinbox.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QStatusBar \
@@ -1364,6 +1359,7 @@ release/main.o: main.cpp ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QAppl
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qlabel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QLineEdit \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qlineedit.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpacerItem \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QToolButton \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		d:/usr/qt/5.5/mingw492_32/include/qwt/qwt_plot.h \
@@ -1373,7 +1369,9 @@ release/main.o: main.cpp ../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QAppl
 		IoForm.h \
 		ui_IoForm.h \
 		QLed.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtGui/QColor
+		../../../usr/qt/5.5/mingw492_32/include/QtGui/QColor \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMenu \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/main.o main.cpp
 
 release/EthInterface.o: EthInterface.cpp EthlInterface.h \
@@ -1617,9 +1615,8 @@ release/IoForm.o: IoForm.cpp IoForm.h \
 		gloinf.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/IoForm.o IoForm.cpp
 
-release/MainForm.o: MainForm.cpp MainForm.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSystemTrayIcon \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qsystemtrayicon.h \
+release/MainForm.o: MainForm.cpp ../../../usr/qt/5.5/mingw492_32/include/QtCore/QSettings \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qsettings.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qobject.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qobjectdefs.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qnamespace.h \
@@ -1672,6 +1669,22 @@ release/MainForm.o: MainForm.cpp MainForm.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qcontainerfwd.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qisenum.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qobject_impl.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qvariant.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qmap.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qpair.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qdebug.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qhash.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qtextstream.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qiodevice.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qlocale.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qshareddata.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qvector.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qpoint.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qset.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtCore/qcontiguouscache.h \
+		MainForm.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSystemTrayIcon \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qsystemtrayicon.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qicon.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qsize.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qpixmap.h \
@@ -1680,33 +1693,20 @@ release/MainForm.o: MainForm.cpp MainForm.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qwindowdefs_win.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qrect.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qmargins.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qpoint.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qcolor.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qrgb.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qsharedpointer.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qshareddata.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qhash.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qpair.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qsharedpointer_impl.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qimage.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qtransform.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qmatrix.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qpolygon.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qvector.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qregion.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qdatastream.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qiodevice.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qline.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qpainterpath.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/qpixelformat.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/QDebug \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qdebug.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qmap.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qtextstream.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qlocale.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qvariant.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qset.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtCore/qcontiguouscache.h \
 		ui_MainForm.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/QVariant \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QAction \
@@ -1766,9 +1766,6 @@ release/MainForm.o: MainForm.cpp MainForm.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/qitemselectionmodel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMainWindow \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmainwindow.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMenuBar \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenubar.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenu.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QPlainTextEdit \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qplaintextedit.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qtextedit.h \
@@ -1787,7 +1784,6 @@ release/MainForm.o: MainForm.cpp MainForm.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qabstractbutton.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QScrollArea \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qscrollarea.h \
-		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpacerItem \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpinBox \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qspinbox.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QStatusBar \
@@ -1870,6 +1866,7 @@ release/MainForm.o: MainForm.cpp MainForm.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qlabel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QLineEdit \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qlineedit.h \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QSpacerItem \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QToolButton \
 		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		d:/usr/qt/5.5/mingw492_32/include/qwt/qwt_plot.h \
@@ -1880,6 +1877,8 @@ release/MainForm.o: MainForm.cpp MainForm.h \
 		ui_IoForm.h \
 		QLed.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtGui/QColor \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/QMenu \
+		../../../usr/qt/5.5/mingw492_32/include/QtWidgets/qmenu.h \
 		Satellite.h \
 		../glonass/kmodel.h \
 		../../../usr/qt/5.5/mingw492_32/include/QtCore/QString

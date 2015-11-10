@@ -9,8 +9,9 @@ Item {
     id: widget
     x: 0
     y: 0
+    height: 300
     width: 400
-    height: 200
+
     property color colorPanel: Qt.rgba(0.9, 0.9, 1.0)
     property color colorBorder: "black"
     property int widthBorder: 2
@@ -101,7 +102,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.preferredHeight: parent.height * 0.5
+            Layout.preferredHeight: parent.height * 0.333
             anchors.margins: widget.radiusBorder
 
             property int itemCount: 3
@@ -111,6 +112,12 @@ Item {
 
             Rectangle {
                 id: radar
+
+                x: 0
+                y: 0
+                height: 10
+                width: 10
+
                 property int itemCount: 24
                 property color colorNet: Qt.rgba(0.0, 0.0, 0.0, 1.0)
 
@@ -183,6 +190,12 @@ Item {
 
             Rectangle {
                 id: world
+
+                x: 0
+                y: 0
+                height: 10
+                width: 10
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -250,6 +263,12 @@ Item {
 
             Rectangle {
                 id: rectTime
+
+                x: 0
+                y: 0
+                height: 10
+                width: 10
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -264,6 +283,7 @@ Item {
                 property string lineAlt: "В:0.0"
                 property real textScale: 0.0833
                 property string textFont: "Consolas"
+
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.leftMargin: parent.width * 0.1
@@ -299,7 +319,7 @@ Item {
             id: diagram
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.preferredHeight: parent.height * 0.5
+            Layout.preferredHeight: parent.height * 0.333
             border.color: widget.colorBorder
             border.width: widget.widthBorder
             radius: widget.radiusBorder
@@ -331,6 +351,10 @@ Item {
                     property string textFont: "Consolas"
                     anchors.fill: parent
                     Rectangle{
+                        x: 0
+                        y: 0
+                        height: 10
+                        width: 10
                         property color colorBar: diagram.colorInfLocked
                         property int heightBar: row.height / (index + 1)
                         property string textBar: "00"
@@ -339,6 +363,7 @@ Item {
                         Layout.minimumHeight: 1
                         Layout.maximumHeight: row.height
                         Layout.preferredHeight: heightBar
+                        Layout.minimumWidth: 1
                         anchors.bottom: parent.bottom
                         color: colorBar
                         Text {
@@ -346,13 +371,23 @@ Item {
                             anchors.bottom: parent.bottom
                             text: parent.textBar
                             font.family: repeater.textFont
-                            font.pointSize: parent.width * repeater.textScale
+                            font.pointSize: Math.ceil(parent.width * repeater.textScale)
                         }
                     }
                 }
             }
         }
 
+        Rectangle {
+            id: serviceWindow
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.preferredHeight: parent.height * 0.333
+            border.color: widget.colorBorder
+            border.width: widget.widthBorder
+            radius: widget.radiusBorder
+            color: widget.colorPanel
+        }
     }
 
     Timer {

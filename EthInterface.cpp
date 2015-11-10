@@ -275,6 +275,18 @@ void EthInterface::execCommand() {
             acceptFrame();
             break;
         case CmdAddrSlv:
+            if (slv->count > 0 && slv->count <= ChannelCount) {
+                puts("");
+                for (int i = 0; i < slv->count; i++) {
+                    printf("%10d\t%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12e\t%12e\t%12e\t%10d\n",
+                            slv->s[i], slv->rng[i], 
+                            slv->sat[i * 4 + 0], slv->sat[i * 4 + 1], 
+                            slv->sat[i * 4 + 2], slv->sat[i * 4 + 3], 
+                            slv->tauc[i], slv->gamma[i], 
+                            slv->time[i]
+                        );
+                }
+            }
 #ifdef DEBUG_LOGFILES
             printf("%d\t%f\n", slv->count, slv->err);
             printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\n\n", slv->dt * 1e6, slv->loc[0] / 1000.0, slv->loc[1] / 1000.0, slv->loc[2] / 1000.0);
@@ -306,7 +318,10 @@ void EthInterface::setSolution(double x, double y, double z, double t) {
     xyzt[2] = z;
     xyzt[3] = t;
     xyz2lla(xyzt, lla);
-//    printf("solve: %8.4f %8.4f %8.4f\n", lla[0] * 180.0 / M_PI, lla[1] * 180.0 / M_PI, lla[2]);
+    uint64_t *data = (uint64_t *)lla;
+//    printf("solve: %8.4llf %8.4llf %8.4llf\n", xyzt[0], xyzt[1], xyzt[2]);
+//    printf("solve: %8.4llf %8.4llf %8.4llf\n", lla[0] * 180.0 / M_PI, lla[1] * 180.0 / M_PI, lla[2]);
+    fflush(stdout);
 }
 
 double *EthInterface::getLla() {

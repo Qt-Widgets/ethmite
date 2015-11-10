@@ -87,15 +87,17 @@ public:
         uint32_t buf_channel;
     } state_ifc;
 
-typedef struct {
+#pragma pack (1)
+typedef struct solution_tag {
     double sat[ChannelCount * 4];
     double rng[ChannelCount];
-    double p[ChannelCount];
     double loc[3];
     double dt;
     double err;
+    int32_t time[ChannelCount];
     int32_t s[ChannelCount];
-    float ms[ChannelCount];
+    float tauc[ChannelCount];
+    float gamma[ChannelCount];
     int32_t is_valid;
     int32_t count;
 } solution;
