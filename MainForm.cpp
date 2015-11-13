@@ -157,7 +157,7 @@ MainForm::MainForm() {
     setWorldLocation(44.98 * M_PI / 180.0, 41.12 * M_PI / 180.0);
     widget.gbState->setLayout(layoutSatState);
 
-    connect(widget.btnOpen, SIGNAL(clicked()), this, SLOT(open()));
+    connect(widget.btnOpen, SIGNAL(clicked()), this, SLOT(clearLogs()));
     connect(widget.btnPlot, SIGNAL(clicked()), this, SLOT(plot()));
     connect(widget.btnSend, SIGNAL(clicked()), this, SLOT(setSatelliteIndex()));
     connect(&com, SIGNAL(readyPlot(float **)), this, SLOT(readyPlotSlot(float **)));
@@ -262,6 +262,10 @@ void MainForm::open() {
             widget.teLog->appendPlainText(QString("Socket state: %1").arg(com.state()));
             break;
     }
+}
+
+void MainForm::clearLogs() {
+    com.clear();
 }
 
 void MainForm::plot() {

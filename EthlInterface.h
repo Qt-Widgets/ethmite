@@ -8,7 +8,7 @@
 #ifndef ETHINTERFACE_H
 #define	ETHINTERFACE_H
 
-//#define DEBUG_LOGFILES 1
+#define DEBUG_LOGFILES 1
 
 #include <QFile>
 #include <QTextStream>
@@ -57,8 +57,7 @@ public:
         uint32_t rc;
         uint32_t phase;
         double range;
-        double prediction;
-        double sat[3];
+        double sat[10];
         float power;
     } loop_prs;
     
@@ -89,15 +88,10 @@ public:
 
 #pragma pack (1)
 typedef struct solution_tag {
-    double sat[ChannelCount * 4];
     double rng[ChannelCount];
     double loc[3];
     double dt;
     double err;
-    int32_t time[ChannelCount];
-    int32_t s[ChannelCount];
-    float tauc[ChannelCount];
-    float gamma[ChannelCount];
     int32_t is_valid;
     int32_t count;
 } solution;

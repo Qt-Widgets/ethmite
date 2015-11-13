@@ -63,6 +63,7 @@ private:
     
 private slots:
     void open();
+    void clearLogs();
     void plot();
     void readyPlotSlot(float **plot);
     void setSatelliteIndex();
