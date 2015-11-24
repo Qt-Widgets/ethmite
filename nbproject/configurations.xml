@@ -13,6 +13,10 @@
       <in>EthInterface.cpp</in>
       <in>IoForm.cpp</in>
       <in>MainForm.cpp</in>
+      <in>PanelRadar.cpp</in>
+      <in>PanelRadar.h</in>
+      <in>PanelWidget.cpp</in>
+      <in>PanelWidget.h</in>
       <in>PlotForm.cpp</in>
       <in>QLed.cpp</in>
       <in>Satellite.cpp</in>
@@ -142,6 +146,14 @@
             <pElem></pElem>
           </incDir>
         </ccTool>
+      </item>
+      <item path="PanelRadar.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PanelRadar.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PanelWidget.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PanelWidget.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PlotForm.cpp" ex="false" tool="1" flavor2="0">
         <ccTool>
@@ -385,6 +397,14 @@
             <pElem></pElem>
           </incDir>
         </ccTool>
+      </item>
+      <item path="PanelRadar.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PanelRadar.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PanelWidget.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PanelWidget.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PlotForm.cpp" ex="false" tool="1" flavor2="0">
         <ccTool>

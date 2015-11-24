@@ -62,7 +62,7 @@ Item {
 
     function setRadarItem(index, azm, elv) {
         var rr, xx, yy, isVisible, label;
-
+        azm = azm - 0.5 * Math.PI
         rr = 0.5 - elv / Math.PI;
         if (rr >= 0.0 && rr <= 0.5) {
             xx = rr * Math.cos(azm);

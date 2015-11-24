@@ -10,7 +10,9 @@ SOURCES += main.cpp \
     MainForm.cpp \
     PlotForm.cpp \
     QLed.cpp \
-    Satellite.cpp
+    Satellite.cpp \
+    PanelWidget.cpp \
+    PanelRadar.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,7 +33,9 @@ HEADERS += \
     MainForm.h \
     PlotForm.h \
     QLed.h \
-    Satellite.h
+    Satellite.h \
+    PanelWidget.h \
+    PanelRadar.h
 
 win32: {
     RC_FILE = ethmite.rc

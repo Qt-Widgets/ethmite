@@ -6,6 +6,8 @@ INPUT(
 ./release/PlotForm.o
 ./release/QLed.o
 ./release/Satellite.o
+./release/PanelWidget.o
+./release/PanelRadar.o
 ./release/gloinf.o
 ./release/kmodel.o
 ./release/qrc_qml.o
@@ -14,4 +16,6 @@ INPUT(
 ./release/moc_MainForm.o
 ./release/moc_PlotForm.o
 ./release/moc_QLed.o
+./release/moc_PanelWidget.o
+./release/moc_PanelRadar.o
 );

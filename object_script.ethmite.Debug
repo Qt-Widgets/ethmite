@@ -6,6 +6,8 @@ INPUT(
 ./debug/PlotForm.o
 ./debug/QLed.o
 ./debug/Satellite.o
+./debug/PanelWidget.o
+./debug/PanelRadar.o
 ./debug/gloinf.o
 ./debug/kmodel.o
 ./debug/qrc_qml.o
@@ -14,4 +16,6 @@ INPUT(
 ./debug/moc_MainForm.o
 ./debug/moc_PlotForm.o
 ./debug/moc_QLed.o
+./debug/moc_PanelWidget.o
+./debug/moc_PanelRadar.o
 );

@@ -11,6 +11,8 @@
 #include "Satellite.h"
 #include "time.h"
 #include "QLed.h"
+#include "PanelWidget.h"
+#include "PanelRadar.h"
 
 const QString MainForm::DefaultSettingIp = QString("192.168.0.1");
 const QString MainForm::DefaultSettingAgl = QString("./almanac/latest.agl");
@@ -19,6 +21,13 @@ MainForm::MainForm() {
     widget.setupUi(this);
 //    widget.tabWidget->tabBar()->hide();
 
+    widgetRadar = new PanelRadar();
+//    widgetRadar->setParent(widget.tab);
+    widget.widgetTop->layout()->addWidget(widgetRadar);
+    widget.widgetTop->layout()->addWidget(new PanelWidget());
+    widget.widgetTop->layout()->addWidget(new PanelWidget());
+    widget.widgetBottom->layout()->addWidget(new PanelWidget());
+    
     labelInfo = new QLabel(widget.statusbar);
     widget.statusbar->addWidget(labelInfo, 1);
     readSettings();
@@ -152,6 +161,7 @@ MainForm::MainForm() {
     
     for (int i = 0; i < RadarChannelCount; i++) {
         setRadarItem(i, 0.0, -1.0);
+        widgetRadar->setRadarItem(i, 0.0, -1.0);
     }
     
     setWorldLocation(44.98 * M_PI / 180.0, 41.12 * M_PI / 180.0);
@@ -333,7 +343,8 @@ void MainForm::setSatelliteIndex() {
             sat.setTime(time(0), i);
 
             setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
-
+            widgetRadar->setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
+            
             if (sat.isValid(i) && (sat.getAerv()[1] * 180.0 / M_PI > 15.0)) {
                 double f = sat.getFrequencyL1Current(i);
                 f -= 1575000000.0;

@@ -39,15 +39,20 @@ public:
     QVBoxLayout *verticalLayout_2;
     QTabWidget *tabWidget;
     QWidget *tab;
-    QScrollArea *scrollAreaSa;
-    QWidget *scrollAreaWidgetContents;
-    QVBoxLayout *verticalLayout_3;
-    QWidget *widgetIoSa;
+    QVBoxLayout *verticalLayout_4;
+    QWidget *widgetTop;
+    QHBoxLayout *horizontalLayout_3;
+    QWidget *widgetBottom;
+    QVBoxLayout *verticalLayout_8;
     QWidget *tab_2;
     QScrollArea *scrollAreaHa;
     QWidget *scrollAreaWidgetContents_2;
     QVBoxLayout *verticalLayout_5;
     QWidget *widgetIoHa;
+    QScrollArea *scrollAreaSa;
+    QWidget *scrollAreaWidgetContents;
+    QVBoxLayout *verticalLayout_3;
+    QWidget *widgetIoSa;
     QWidget *tab_3;
     QScrollArea *scrollAreaState;
     QWidget *scrollAreaWidgetContents_3;
@@ -93,52 +98,74 @@ public:
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
-        scrollAreaSa = new QScrollArea(tab);
-        scrollAreaSa->setObjectName(QStringLiteral("scrollAreaSa"));
-        scrollAreaSa->setGeometry(QRect(280, 0, 231, 351));
-        scrollAreaSa->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        scrollAreaSa->setWidgetResizable(true);
-        scrollAreaWidgetContents = new QWidget();
-        scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 208, 349));
-        verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents);
-        verticalLayout_3->setSpacing(0);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        verticalLayout_3->setContentsMargins(0, 0, 0, 0);
-        widgetIoSa = new QWidget(scrollAreaWidgetContents);
-        widgetIoSa->setObjectName(QStringLiteral("widgetIoSa"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(widgetIoSa->sizePolicy().hasHeightForWidth());
-        widgetIoSa->setSizePolicy(sizePolicy);
+        verticalLayout_4 = new QVBoxLayout(tab);
+        verticalLayout_4->setSpacing(0);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        verticalLayout_4->setContentsMargins(0, 0, 0, 0);
+        widgetTop = new QWidget(tab);
+        widgetTop->setObjectName(QStringLiteral("widgetTop"));
+        horizontalLayout_3 = new QHBoxLayout(widgetTop);
+        horizontalLayout_3->setSpacing(8);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        horizontalLayout_3->setContentsMargins(8, 8, 8, 4);
 
-        verticalLayout_3->addWidget(widgetIoSa);
+        verticalLayout_4->addWidget(widgetTop);
 
-        scrollAreaSa->setWidget(scrollAreaWidgetContents);
+        widgetBottom = new QWidget(tab);
+        widgetBottom->setObjectName(QStringLiteral("widgetBottom"));
+        verticalLayout_8 = new QVBoxLayout(widgetBottom);
+        verticalLayout_8->setSpacing(8);
+        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        verticalLayout_8->setContentsMargins(8, 4, 8, 8);
+
+        verticalLayout_4->addWidget(widgetBottom);
+
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
         scrollAreaHa = new QScrollArea(tab_2);
         scrollAreaHa->setObjectName(QStringLiteral("scrollAreaHa"));
-        scrollAreaHa->setGeometry(QRect(290, 0, 231, 351));
+        scrollAreaHa->setGeometry(QRect(290, 10, 231, 351));
         scrollAreaHa->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         scrollAreaHa->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QStringLiteral("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 208, 349));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 212, 349));
         verticalLayout_5 = new QVBoxLayout(scrollAreaWidgetContents_2);
         verticalLayout_5->setSpacing(0);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
         verticalLayout_5->setContentsMargins(0, 0, 0, 0);
         widgetIoHa = new QWidget(scrollAreaWidgetContents_2);
         widgetIoHa->setObjectName(QStringLiteral("widgetIoHa"));
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(widgetIoHa->sizePolicy().hasHeightForWidth());
         widgetIoHa->setSizePolicy(sizePolicy);
 
         verticalLayout_5->addWidget(widgetIoHa);
 
         scrollAreaHa->setWidget(scrollAreaWidgetContents_2);
+        scrollAreaSa = new QScrollArea(tab_2);
+        scrollAreaSa->setObjectName(QStringLiteral("scrollAreaSa"));
+        scrollAreaSa->setGeometry(QRect(20, 10, 231, 351));
+        scrollAreaSa->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        scrollAreaSa->setWidgetResizable(true);
+        scrollAreaWidgetContents = new QWidget();
+        scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 212, 349));
+        verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents);
+        verticalLayout_3->setSpacing(0);
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+        verticalLayout_3->setContentsMargins(0, 0, 0, 0);
+        widgetIoSa = new QWidget(scrollAreaWidgetContents);
+        widgetIoSa->setObjectName(QStringLiteral("widgetIoSa"));
+        sizePolicy.setHeightForWidth(widgetIoSa->sizePolicy().hasHeightForWidth());
+        widgetIoSa->setSizePolicy(sizePolicy);
+
+        verticalLayout_3->addWidget(widgetIoSa);
+
+        scrollAreaSa->setWidget(scrollAreaWidgetContents);
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QStringLiteral("tab_3"));
@@ -149,7 +176,7 @@ public:
         scrollAreaState->setWidgetResizable(true);
         scrollAreaWidgetContents_3 = new QWidget();
         scrollAreaWidgetContents_3->setObjectName(QStringLiteral("scrollAreaWidgetContents_3"));
-        scrollAreaWidgetContents_3->setGeometry(QRect(0, 0, 208, 349));
+        scrollAreaWidgetContents_3->setGeometry(QRect(0, 0, 212, 349));
         verticalLayout_6 = new QVBoxLayout(scrollAreaWidgetContents_3);
         verticalLayout_6->setSpacing(0);
         verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
@@ -246,7 +273,7 @@ public:
 
         retranslateUi(MainForm);
 
-        tabWidget->setCurrentIndex(3);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainForm);
