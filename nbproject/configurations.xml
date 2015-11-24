@@ -49,8 +49,7 @@
           <executablePath>release\ethmite.exe</executablePath>
           <cTool>
             <incDir>
-              <pElem>../../glonass</pElem>
-              <pElem></pElem>
+              <pElem>../glonass</pElem>
             </incDir>
             <incFile>
               <pElem>../../../usr/qt/5.5/mingw492_32/include/qwt</pElem>
@@ -75,6 +74,9 @@
             </preprocessorList>
           </cTool>
           <ccTool>
+            <incDir>
+              <pElem>../glonass</pElem>
+            </incDir>
             <incFile>
               <pElem>../../../usr/qt/5.5/mingw492_32/include/qwt</pElem>
             </incFile>

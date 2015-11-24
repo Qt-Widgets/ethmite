@@ -11,6 +11,9 @@
 #include <math.h>
 
 EthInterface::EthInterface() {
+    
+    tcpSocket = new QTcpSocket(this);
+    ds = new QDataStream(tcpSocket);
     lla[0] = 0.0;
     lla[1] = 0.0;
     lla[2] = 0.0;
@@ -58,7 +61,7 @@ EthInterface::EthInterface() {
     ssol.setDevice(&fsol);
 #endif
     
-    connect(this, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
 }
 
 EthInterface::~EthInterface() {
@@ -74,6 +77,10 @@ EthInterface::~EthInterface() {
     }
     fsol.close();
 #endif
+}
+
+QTcpSocket *EthInterface::getSocket() {
+    return tcpSocket;
 }
 
 void EthInterface::findFreeChannels() {
@@ -157,17 +164,15 @@ void EthInterface::clear() {
 }
 
 void EthInterface::readyReadSlot() {
-    QDataStream ds(this);
 
-    if (ds.status() != QDataStream::Ok) {
-        ds.resetStatus();
+    if (ds->status() != QDataStream::Ok) {
+        ds->resetStatus();
     }
     
-//    ds.setByteOrder(QDataStream::BigEndian);
     quint32 value;
     
-    while (!atEnd() && (bytesAvailable() >= 4)) {
-        ds >> value;
+    while (!tcpSocket->atEnd() && (tcpSocket->bytesAvailable() >= 4)) {
+        (*ds) >> value;
         
         bool is_packet = acceptData(value);
         
@@ -198,17 +203,17 @@ void EthInterface::execCommand() {
                 if (iprssa[lprs->id] != lprs->index) {
                     iprssa[lprs->id] = lprs->index;
                     srsa[lprs->id] 
-                            << lprs->number << ",\t" << lprs->index << ",\t" 
-                            << QString::number(lprs->sat[0], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[1], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[2], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[3], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[4], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[5], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[6], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[7], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[8], 'g', 12) << ",\t" 
-                            << QString::number(lprs->sat[9], 'g', 12) << ",\t" 
+                            << lprs->number << "\t" << lprs->index    << "\t" 
+                            << QString::number(lprs->sat[0], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[1], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[2], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[3], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[4], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[5], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[6], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[7], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[8], 'g', 12) << "\t" 
+                            << QString::number(lprs->sat[9], 'g', 12) << "\t" 
                             << QString::number(lprs->range , 'g', 12) << "\n";
                     srsa[lprs->id].flush();
                 }
@@ -293,13 +298,16 @@ void EthInterface::execCommand() {
 //                }
             }
 #ifdef DEBUG_LOGFILES
-            ssol << slv->count << '\t' <<
-                    QString::number(slv->err, 'g', 12) << '\t' <<
-                    QString::number(slv->dt , 'g', 12) << '\t' <<
-                    QString::number(slv->loc[0] , 'g', 12) << '\t' <<
-                    QString::number(slv->loc[1] , 'g', 12) << '\t' <<
-                    QString::number(slv->loc[2] , 'g', 12) << '\n';
-            ssol.flush();
+            if (slv->is_valid > 0) {
+                ssol << slv->count << '\t' << slv->is_valid << '\t' << slv->iter << '\t' <<
+                        QString::number(slv->err, 'g', 12) << '\t' <<
+                        QString::number(slv->distance, 'g', 12) << '\t' <<
+                        QString::number(slv->dt , 'g', 12) << '\t' <<
+                        QString::number(slv->loc[0] , 'g', 12) << '\t' <<
+                        QString::number(slv->loc[1] , 'g', 12) << '\t' <<
+                        QString::number(slv->loc[2] , 'g', 12) << '\n';
+                ssol.flush();
+            }
 #endif
             setSolution(slv->loc[0], slv->loc[1], slv->loc[2], slv->dt);
             break;
@@ -360,25 +368,24 @@ void EthInterface::xyz2lla(double *xyz, double *lla) {
 }
 
 void EthInterface::sendData(const uint32_t value, int32_t *index) {
-    QDataStream ds(this);
 
-    if (ds.status() != QDataStream::Ok) {
-        ds.resetStatus();
+    if (ds->status() != QDataStream::Ok) {
+        ds->resetStatus();
     }
     
     if (value == Seop) {
-        ds << Rseop0;
-        ds << Rseop1;
+        (*ds) << Rseop0;
+        (*ds) << Rseop1;
         (*index) += 2;
     }
     else {
         if (value == Rseop0) {
-            ds << Rseop0;
-            ds << Rseop2;
+            (*ds) << Rseop0;
+            (*ds) << Rseop2;
             (*index) += 2;
         }
         else {
-            ds << value;
+            (*ds) << value;
             (*index)++;
         }
     }
@@ -388,13 +395,12 @@ void EthInterface::sendData(const uint32_t value, int32_t *index) {
 void EthInterface::sendPacket(uint32_t *data, int dlen) {
     int32_t index = 2;
     uint32_t cs = crc(data, 0, dlen);
-    QDataStream ds(this);
     
-    if (ds.status() != QDataStream::Ok) {
-        ds.resetStatus();
+    if (ds->status() != QDataStream::Ok) {
+        ds->resetStatus();
     }
     
-    ds << Seop;
+    (*ds) << Seop;
 
     for (int i = 0; i < dlen; i++) {
         sendData(data[i], &index);
@@ -402,13 +408,14 @@ void EthInterface::sendPacket(uint32_t *data, int dlen) {
 
     sendData(cs, &index);
     
-    ds << Seop;
+    (*ds) << Seop;
     
     index = (4 - (index % 4)) % 4;
     
     while (index--) {
-        ds << Seop;
+        (*ds) << Seop;
     }
+//    tcpSocket->write(block);
 }
 
 void EthInterface::acceptPlot() {

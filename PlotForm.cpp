@@ -100,15 +100,23 @@ void PlotForm::setDataLen(int value) {
 }
 
 void PlotForm::setData(float **data, int len) {
-    
+
+#ifdef DEBUG_LOGFILES
     FILE *f;
     f = fopen("d:/tmp/ndata.csv", "a");
+#endif
     for (int i = 0; i < len && i < m_data_len; ++i) {
         m_data[1][i] = (double)(data[0][i]);
         m_data[2][i] = (double)(data[1][i]);
-        fprintf(f, "%lf\t%lf\n", m_data[1][i], m_data[2][i]);
+#ifdef DEBUG_LOGFILES
+        if (f != NULL) {
+            fprintf(f, "%lf\t%lf\n", m_data[1][i], m_data[2][i]);
+        }
+#endif
     }
+#ifdef DEBUG_LOGFILES
     fclose(f);
+#endif
     
     curve[0].setRawSamples(m_data[0], m_data[1], m_data_len);
 //    widget.qwtPlot->setAxisScale(QwtPlot::xBottom, curve.minXValue(), curve.maxXValue());
@@ -180,11 +188,13 @@ void PlotForm::setAxisXType(int type) {
 
 void PlotForm::save() {
     FILE *f;
-    f = fopen("d:/tmp/plot.csv", "w");
-    for (int i = 0; i < m_data_len; i++) {
-        fprintf(f, "%lf\t%lf\n", m_data[1][i], m_data[2][i]);
+    f = fopen("plot.csv", "w");
+    if (f != NULL) {
+        for (int i = 0; i < m_data_len; i++) {
+            fprintf(f, "%lf\t%lf\n", m_data[1][i], m_data[2][i]);
+        }
+        fclose(f);
     }
-    fclose(f);
 }
 
 

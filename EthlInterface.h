@@ -8,7 +8,10 @@
 #ifndef ETHINTERFACE_H
 #define	ETHINTERFACE_H
 
-#define DEBUG_LOGFILES 1
+//#define DEBUG_LOGFILES
+#ifdef DEBUG_LOGFILES
+#undef DEBUG_LOGFILES
+#endif
 
 #include <QFile>
 #include <QTextStream>
@@ -16,7 +19,7 @@
 #include "inttypes.h"
 #include "gloinf.h"
 
-class EthInterface : public QTcpSocket {
+class EthInterface : public QObject {
     Q_OBJECT
 public:
     static const int      ChannelCount    = 8;
@@ -92,6 +95,8 @@ typedef struct solution_tag {
     double loc[3];
     double dt;
     double err;
+    double distance;
+    int32_t iter;
     int32_t is_valid;
     int32_t count;
 } solution;
@@ -124,6 +129,7 @@ typedef struct solution_tag {
     int getFreeChannel(int id);
     float getSnr(int channel);
     double *getLla();
+    QTcpSocket *getSocket();
     
 private:
     
@@ -171,6 +177,8 @@ private:
     int time[ChannelCount];
     double xyzt[4];
     double lla[3];
+    QTcpSocket *tcpSocket;
+    QDataStream *ds;
     
     bool acceptData(uint32_t value);
     void acceptPlot();

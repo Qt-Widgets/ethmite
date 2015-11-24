@@ -8,6 +8,11 @@
 #ifndef _PLOTFORM_H
 #define	_PLOTFORM_H
 
+//#define DEBUG_LOGFILES
+#ifdef DEBUG_LOGFILES
+#undef DEBUG_LOGFILES
+#endif
+
 #include <qwt/qwt.h>
 #include <qwt/qwt_plot_curve.h>
 #include <qwt/qwt_scale_engine.h>

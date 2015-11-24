@@ -46,7 +46,7 @@ void Satellite::loadAgl(const QString fileName) {
     QString line[3];
     line[0] = txt.readLine();
     
-    while (!line[0].isNull()) {
+    while (!txt.atEnd() && (txt.status() == QTextStream::Ok) && !line[0].isNull()) {
         if (!line[0].isEmpty()) {
             line[1] = txt.readLine();
             line[2] = txt.readLine();
@@ -127,8 +127,9 @@ bool Satellite::appendAgl(const QString line[3]) {
         result = true;
 
         index = list2.at(0).toInt(&ok) - 1;
-        s = &agl[index];
+
         if (index >= 0 || index < AglCount) {
+            s = &agl[index];
             s->nfreq    = list2.at(1).toInt(&ok);
             s->valid    = list2.at(2).toInt(&ok);
             s->day      = list2.at(3).toInt(&ok);

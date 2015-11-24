@@ -175,7 +175,6 @@ Makefile: ethmite.pro ../../../usr/qt/5.5/mingw492_32/mkspecs/win32-g++/qmake.co
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/resolve_config.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/exclusive_builds_post.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/default_post.prf \
-		../../../usr/qt/5.5/mingw492_32/mkspecs/features/win32/console.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/qwtconfig.pri \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/qwtfunctions.pri \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/qwt.prf \
@@ -187,11 +186,13 @@ Makefile: ethmite.pro ../../../usr/qt/5.5/mingw492_32/mkspecs/win32-g++/qmake.co
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/moc.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/win32/opengl.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/uic.prf \
+		../../../usr/qt/5.5/mingw492_32/mkspecs/features/win32/windows.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/testcase_targets.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/exceptions.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/yacc.prf \
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/lex.prf \
 		ethmite.pro \
+		D:/usr/qt/5.5/mingw492_32/lib/qtmain.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5QuickWidgets.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Quick.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Declarative.prl \
@@ -319,7 +320,6 @@ deployment.pri:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/resolve_config.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/exclusive_builds_post.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/default_post.prf:
-../../../usr/qt/5.5/mingw492_32/mkspecs/features/win32/console.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/qwtconfig.pri:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/qwtfunctions.pri:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/qwt.prf:
@@ -331,11 +331,13 @@ deployment.pri:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/moc.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/win32/opengl.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/uic.prf:
+../../../usr/qt/5.5/mingw492_32/mkspecs/features/win32/windows.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/testcase_targets.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/exceptions.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/yacc.prf:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/lex.prf:
 ethmite.pro:
+D:/usr/qt/5.5/mingw492_32/lib/qtmain.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5QuickWidgets.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Quick.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Declarative.prl:

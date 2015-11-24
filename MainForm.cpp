@@ -168,6 +168,7 @@ MainForm::MainForm() {
 }
 
 void MainForm::timerEvent(QTimerEvent * event) {
+    QTcpSocket *s = com.getSocket();
     
     if (event->timerId() == timerIdFast) {
         for (int i = 0; i < ChannelCount; i++) {
@@ -190,7 +191,7 @@ void MainForm::timerEvent(QTimerEvent * event) {
     if (event->timerId() == timerIdSlow) {
         open();
         setSatelliteIndex();
-        QString s1 = (com.state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
+        QString s1 = (s->state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
         labelInfo->setText(QString("Соединение: %1 \t Обмен: %2").arg(s1).arg("Да"));
     }
 }
@@ -248,18 +249,20 @@ MainForm::~MainForm() {
 }
 
 void MainForm::open() {
-    switch (com.state()) {
+    QTcpSocket *s = com.getSocket();
+    
+    switch (s->state()) {
         case QTcpSocket::ConnectedState     :
 //            com.close();
 //            widget.teLog->appendPlainText(QString("Disconnecting"));
             break;
         case QTcpSocket::UnconnectedState   :
-            com.connectToHost(settingIp, settingPort);
+            s->connectToHost(settingIp, settingPort);
             widget.teLog->appendPlainText(QString("Connecting to: %1:%2").arg(settingIp).arg(settingPort));
             com.clear();
             break;
         default:
-            widget.teLog->appendPlainText(QString("Socket state: %1").arg(com.state()));
+            widget.teLog->appendPlainText(QString("Socket state: %1").arg(s->state()));
             break;
     }
 }
@@ -278,7 +281,9 @@ void MainForm::readyPlotSlot(float **plot) {
 
 void MainForm::setChannel(uint32_t channel, uint32_t id, uint32_t carrier) {
     EthInterface::command cmd;
-    if (com.isOpen() && com.state() == QTcpSocket::ConnectedState && com.isValid() && com.isWritable()) {
+    QTcpSocket *s = com.getSocket();
+    
+    if (s->isOpen() && s->state() == QTcpSocket::ConnectedState && s->isValid() && s->isWritable()) {
         cmd.cmd  = EthInterface::CmdWrite;
         cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
 
@@ -335,7 +340,6 @@ void MainForm::setSatelliteIndex() {
                 f = f * 4294967296.0 / 100000000.0;
                 c = com.getFreeChannel(i + 1);
                 if (c >= 0) {
-//                    printf("setchannel: %d - %d\n", c, i + 1);
                     setChannel((uint32_t)c, (uint32_t)(i + 1), (uint32_t)f);
                 }
             }
@@ -343,7 +347,6 @@ void MainForm::setSatelliteIndex() {
     }
 
 }
-
 
 void MainForm::createActions() {
     showAction = new QAction(tr("Показать"), this);

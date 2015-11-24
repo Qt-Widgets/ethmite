@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += qml quick widgets network declarative quickwidgets 
 
-CONFIG += qwt console
+CONFIG += qwt
 
 SOURCES += main.cpp \
     EthInterface.cpp \

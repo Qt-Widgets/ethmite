@@ -61,25 +61,27 @@ Item {
     }
 
     function setRadarItem(index, azm, elv) {
-        var rr, xx, yy, isVisible;
+        var rr, xx, yy, isVisible, label;
 
         rr = 0.5 - elv / Math.PI;
         if (rr >= 0.0 && rr <= 0.5) {
             xx = rr * Math.cos(azm);
             yy = rr * Math.sin(azm);
+            label = ("0" + (index + 1)).slice(-2);
             isVisible = true;
         }
         else {
             xx = 0.0;
             yy = 0.0;
+            label = "00";
             isVisible = false;
         }
 
         repRadar.itemAt(index).posX = xx;
         repRadar.itemAt(index).posY = yy;
-        repRadar.itemAt(index).colorValue = diagram.colorInfLocked;//(Math.random() > 0.5) ? "green" : "yellow";
+        repRadar.itemAt(index).colorValue = diagram.colorInfLocked;
+        repRadar.itemAt(index).lineItemLabel = label;
         repRadar.itemAt(index).isVisible = isVisible;
-
     }
 
     function setWorldLocation(lat, lon) {
@@ -172,6 +174,8 @@ Item {
                         property real posY: Math.random() - 0.5
                         property color colorValue: (Math.random() > 0.5) ? "green" : "yellow"
                         property bool isVisible: (Math.random() > 0.5)
+                        property string lineItemLabel: "00"
+
                         x: canvas.x + (canvas.width  - width ) * 0.5 + posX * canvas.width
                         y: canvas.y + (canvas.height - height) * 0.5 + posY * canvas.height
                         width: canvas.width * 0.1
@@ -179,6 +183,14 @@ Item {
                         radius: width
                         color: colorValue
                         visible: isVisible
+
+                        Text {
+                            id: textRadarItem
+                            anchors.centerIn: parent
+                            font.family: rectTime.textFont
+                            font.pointSize: 1 + parent.width * 0.4
+                            text: parent.lineItemLabel
+                        }
                     }
                 }
 
@@ -204,10 +216,10 @@ Item {
                 radius: widget.radiusBorder
                 color: widget.colorPanel
 
-                property real locX: Math.random() - 0.5
-                property real locY: Math.random() - 0.5
-                property real slvX: Math.random() - 0.5
-                property real slvY: Math.random() - 0.5
+                property real locX: 0.0 //Math.random() - 0.5
+                property real locY: 0.0 //Math.random() - 0.5
+                property real slvX: 0.0 //Math.random() - 0.5
+                property real slvY: 0.0 //Math.random() - 0.5
                 property bool slvVisible: true//(Math.random() > 0.5)
 
                 Image {
@@ -223,6 +235,18 @@ Item {
                     anchors.fill: map
 //                    source: map
                     maskSource: map
+                }
+
+                Rectangle {
+                    id: posPoint
+                    width: parent.width * 0.1
+                    height: width
+                    radius: width
+                    color: Qt.rgba(0.5, 1.0, 0.5, 0.5)
+
+                    x: canvasWorld.x + (canvasWorld.width  - width ) * 0.5 + world.slvX * canvasWorld.width
+                    y: canvasWorld.y + (canvasWorld.height - height) * 0.5 + world.slvY * canvasWorld.height
+                    visible: world.slvVisible
                 }
 
                 Canvas {
@@ -245,18 +269,6 @@ Item {
 
                         ctx.stroke();
                     }
-                }
-
-                Rectangle {
-                    id: posPoint
-                    width: parent.width * 0.1
-                    height: width
-                    radius: width
-                    color: Qt.rgba(0.0, 0.9, 0.0, 0.8)
-
-                    x: canvasWorld.x + (canvasWorld.width  - width ) * 0.5 + world.slvX * canvasWorld.width
-                    y: canvasWorld.y + (canvasWorld.height - height) * 0.5 + world.slvY * canvasWorld.height
-                    visible: world.slvVisible
                 }
 
             }
