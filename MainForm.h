@@ -16,6 +16,9 @@
 #include "IoForm.h"
 #include "QLed.h"
 #include "PanelRadar.h"
+#include "PanelDiagram.h"
+#include "PanelWorld.h"
+#include "PanelInfo.h"
 #include <QMenu>
 
 class MainForm : public QMainWindow {
@@ -51,6 +54,9 @@ private:
     QAction *quitAction;
     QLabel *labelInfo;
     PanelRadar *widgetRadar;
+    PanelDiagram *widgetDiagram;
+    PanelWorld *widgetWorld;
+    PanelInfo *widgetInfo;
     
     void timerEvent(QTimerEvent * event);
     void setChannelState(qint32 index, qint32 state, qint32 label, qreal value);

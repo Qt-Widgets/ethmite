@@ -10,6 +10,8 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QPaintEvent>
+#include <qmath.h>
 
 class PanelWidget : public QWidget{
     Q_OBJECT

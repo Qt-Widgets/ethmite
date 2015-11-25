@@ -23,6 +23,7 @@ void PanelRadar::paintEvent(QPaintEvent* event) {
     p.begin(this);
     setMargins(&p);
     p.setRenderHint(QPainter::Antialiasing, true);
+    p.setRenderHint(QPainter::TextAntialiasing, true);
     
     QPen pen = p.pen();
     pen.setWidth(1);
@@ -60,7 +61,7 @@ void PanelRadar::drawItems(QPainter *p) {
     
     qreal w = (qreal)p->device()->width();
     qreal h = (qreal)p->device()->height();
-    qreal r = qMin(w, h) * 0.05;
+    qreal r = qMin(w, h) * 0.075;
 
     QFont font = p->font();
     font.setPointSizeF(r);

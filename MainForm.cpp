@@ -11,8 +11,6 @@
 #include "Satellite.h"
 #include "time.h"
 #include "QLed.h"
-#include "PanelWidget.h"
-#include "PanelRadar.h"
 
 const QString MainForm::DefaultSettingIp = QString("192.168.0.1");
 const QString MainForm::DefaultSettingAgl = QString("./almanac/latest.agl");
@@ -22,11 +20,14 @@ MainForm::MainForm() {
 //    widget.tabWidget->tabBar()->hide();
 
     widgetRadar = new PanelRadar();
-//    widgetRadar->setParent(widget.tab);
+    widgetDiagram = new PanelDiagram();
+    widgetWorld = new PanelWorld();
+    widgetInfo = new PanelInfo();
+    
     widget.widgetTop->layout()->addWidget(widgetRadar);
-    widget.widgetTop->layout()->addWidget(new PanelWidget());
-    widget.widgetTop->layout()->addWidget(new PanelWidget());
-    widget.widgetBottom->layout()->addWidget(new PanelWidget());
+    widget.widgetTop->layout()->addWidget(widgetWorld);
+    widget.widgetTop->layout()->addWidget(widgetInfo);
+    widget.widgetBottom->layout()->addWidget(widgetDiagram);
     
     labelInfo = new QLabel(widget.statusbar);
     widget.statusbar->addWidget(labelInfo, 1);
@@ -185,6 +186,7 @@ void MainForm::timerEvent(QTimerEvent * event) {
             QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
             leds[i]->setState(c);
             setChannelState(i, (quint32)com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
+            widgetDiagram->setDiagramItem(i, com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
         }
 //        int64_t lla[3] = {-1, -1, -1};
 //        double *dlla = (double *)lla;

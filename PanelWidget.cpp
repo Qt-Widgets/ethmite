@@ -32,6 +32,7 @@ void PanelWidget::paintEvent(QPaintEvent*) {
     QPainter p;
     p.begin(this);
     p.setRenderHint(QPainter::Antialiasing, true);
+    p.setRenderHint(QPainter::TextAntialiasing, true);
 
     QPen pen = p.pen();
     pen.setWidth(2);

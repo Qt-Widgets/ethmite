@@ -34,8 +34,8 @@ private:
         qreal elv;
     };
     
-    void drawItems(QPainter *p);
     RadarItem *items;
+    void drawItems(QPainter *p);
 };
 
 #endif	/* PANELRADAR_H */
