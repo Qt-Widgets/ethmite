@@ -326,10 +326,14 @@ void EthInterface::setSolution(double x, double y, double z, double t) {
     xyzt[2] = z;
     xyzt[3] = t;
     xyz2lla(xyzt, lla);
-    uint64_t *data = (uint64_t *)lla;
+//    uint64_t *data = (uint64_t *)lla;
 //    printf("solve: %8.4llf %8.4llf %8.4llf\n", xyzt[0], xyzt[1], xyzt[2]);
 //    printf("solve: %8.4llf %8.4llf %8.4llf\n", lla[0] * 180.0 / M_PI, lla[1] * 180.0 / M_PI, lla[2]);
-    fflush(stdout);
+//    fflush(stdout);
+}
+
+double EthInterface::getTimeError() {
+    return xyzt[3];
 }
 
 double *EthInterface::getLla() {

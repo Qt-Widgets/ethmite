@@ -52,6 +52,7 @@ private:
     QAction *showAction;
     QAction *hideAction;
     QAction *quitAction;
+    QAction *debugAction;
     QLabel *labelInfo;
     PanelRadar *widgetRadar;
     PanelDiagram *widgetDiagram;
@@ -59,11 +60,6 @@ private:
     PanelInfo *widgetInfo;
     
     void timerEvent(QTimerEvent * event);
-    void setChannelState(qint32 index, qint32 state, qint32 label, qreal value);
-    void setRadarItem(qint32 index, qreal azm, qreal elv);
-    void setWorldLocation(qreal lat, qreal lon);
-    void setWorldSolution(qreal lat, qreal lon, qreal alt, boolean isVisible);
-    void setTime(qint32 value);
     void createActions();
     void createTrayIcon();
     void readSettings();
@@ -76,6 +72,7 @@ private slots:
     void readyPlotSlot(float **plot);
     void setSatelliteIndex();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void showDebug();
 };
 
 #endif	/* _MAINFORM_H */

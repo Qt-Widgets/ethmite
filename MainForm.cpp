@@ -17,8 +17,9 @@ const QString MainForm::DefaultSettingAgl = QString("./almanac/latest.agl");
 
 MainForm::MainForm() {
     widget.setupUi(this);
-//    widget.tabWidget->tabBar()->hide();
 
+    widget.tabWidget->tabBar()->hide();
+    
     widgetRadar = new PanelRadar();
     widgetDiagram = new PanelDiagram();
     widgetWorld = new PanelWorld();
@@ -161,11 +162,9 @@ MainForm::MainForm() {
     }
     
     for (int i = 0; i < RadarChannelCount; i++) {
-        setRadarItem(i, 0.0, -1.0);
         widgetRadar->setRadarItem(i, 0.0, -1.0);
     }
     
-    setWorldLocation(44.98 * M_PI / 180.0, 41.12 * M_PI / 180.0);
     widget.gbState->setLayout(layoutSatState);
 
     connect(widget.btnOpen, SIGNAL(clicked()), this, SLOT(clearLogs()));
@@ -185,16 +184,13 @@ void MainForm::timerEvent(QTimerEvent * event) {
         for (int i = 0; i < ChannelCount; i++) {
             QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
             leds[i]->setState(c);
-            setChannelState(i, (quint32)com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
             widgetDiagram->setDiagramItem(i, com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
         }
-//        int64_t lla[3] = {-1, -1, -1};
-//        double *dlla = (double *)lla;
-//        setWorldSolution(dlla[0], dlla[1], dlla[2], true);
-        setWorldSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], true);
+        widgetInfo->setSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], com.getTimeError());
         for (int i = 0; i < ChannelCount; i++) {
             if (com.getStates(i) == 7) {
-                setTime(com.getTime(i));
+//                setTime(com.getTime(i));
+                widgetInfo->setTime(com.getTime(i));
                 break;
             }
         }
@@ -206,55 +202,6 @@ void MainForm::timerEvent(QTimerEvent * event) {
         QString s1 = (s->state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
         labelInfo->setText(QString("Соединение: %1 \t Обмен: %2").arg(s1).arg("Да"));
     }
-}
-
-void MainForm::setChannelState(qint32 index, qint32 state, qint32 label, qreal value) {
-    QObject *obj = (QObject *)widget.quickWidget->rootObject();
-    QMetaObject::invokeMethod(obj, "setChannelState", 
-            Q_ARG(QVariant, index), 
-            Q_ARG(QVariant, state), 
-            Q_ARG(QVariant, label), 
-            Q_ARG(QVariant, value)
-    );
-}
-
-void MainForm::setRadarItem(qint32 index, qreal azm, qreal elv) {
-    QObject *obj = (QObject *)widget.quickWidget->rootObject();
-    QMetaObject::invokeMethod(obj, "setRadarItem", 
-            Q_ARG(QVariant, index), 
-            Q_ARG(QVariant, azm), 
-            Q_ARG(QVariant, elv) 
-    );
-}
-
-void MainForm::setWorldLocation(qreal lat, qreal lon) {
-    QObject *obj = (QObject *)widget.quickWidget->rootObject();
-    QMetaObject::invokeMethod(obj, "setWorldLocation", 
-            Q_ARG(QVariant, lat), 
-            Q_ARG(QVariant, lon) 
-    );
-}
-
-void MainForm::setWorldSolution(qreal lat, qreal lon, qreal alt, boolean isVisible) {
-
-    if (lat != lat || lon != lon || lat != lat) {
-        return;
-    }
-    
-    QObject *obj = (QObject *)widget.quickWidget->rootObject();
-    QMetaObject::invokeMethod(obj, "setWorldSolution", 
-            Q_ARG(QVariant, lat), 
-            Q_ARG(QVariant, lon), 
-            Q_ARG(QVariant, alt), 
-            Q_ARG(QVariant, isVisible) 
-    );
-}
-
-void MainForm::setTime(qint32 value) {
-    QObject *obj = (QObject *)widget.quickWidget->rootObject();
-    QMetaObject::invokeMethod(obj, "setTime", 
-            Q_ARG(QVariant, value) 
-    );
 }
 
 MainForm::~MainForm() {
@@ -344,7 +291,6 @@ void MainForm::setSatelliteIndex() {
         if (sat.isValid(i)) {
             sat.setTime(time(0), i);
 
-            setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
             widgetRadar->setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
             
             if (sat.isValid(i) && (sat.getAerv()[1] * 180.0 / M_PI > 15.0)) {
@@ -361,17 +307,30 @@ void MainForm::setSatelliteIndex() {
 
 }
 
-void MainForm::createActions() {
-    showAction = new QAction(tr("Показать"), this);
-    connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
-
-    hideAction = new QAction(tr("Спрятать"), this);
-    connect(hideAction, SIGNAL(triggered()), this, SLOT(hide()));
-
-    quitAction = new QAction(tr("Закрыть"), this);
-    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+void MainForm::showDebug() {
+    if (widget.tabWidget->tabBar()->isVisible()) {
+        widget.tabWidget->tabBar()->hide();
+    }
+    else {
+        widget.tabWidget->tabBar()->show();
+    }
 }
 
+void MainForm::createActions() {
+    showAction = new QAction("Показать", this);
+    connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+
+    hideAction = new QAction("Спрятать", this);
+    connect(hideAction, SIGNAL(triggered()), this, SLOT(hide()));
+
+    quitAction = new QAction("Закрыть", this);
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    
+    debugAction = new QAction(this);
+    debugAction->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::SHIFT + Qt::Key_D));
+    connect(debugAction, SIGNAL(triggered()), this, SLOT(showDebug()));
+    this->addAction(debugAction);
+}
 
 void MainForm::createTrayIcon() {
     trayIconMenu = new QMenu(this);

@@ -193,15 +193,10 @@ Makefile: ethmite.pro ../../../usr/qt/5.5/mingw492_32/mkspecs/win32-g++/qmake.co
 		../../../usr/qt/5.5/mingw492_32/mkspecs/features/lex.prf \
 		ethmite.pro \
 		D:/usr/qt/5.5/mingw492_32/lib/qtmain.prl \
-		D:/usr/qt/5.5/mingw492_32/lib/Qt5QuickWidgets.prl \
-		D:/usr/qt/5.5/mingw492_32/lib/Qt5Quick.prl \
-		D:/usr/qt/5.5/mingw492_32/lib/Qt5Declarative.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Svg.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Widgets.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Gui.prl \
-		D:/usr/qt/5.5/mingw492_32/lib/Qt5Qml.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Network.prl \
-		D:/usr/qt/5.5/mingw492_32/lib/Qt5Script.prl \
 		D:/usr/qt/5.5/mingw492_32/lib/Qt5Core.prl
 	$(QMAKE) -o Makefile ethmite.pro
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/spec_pre.prf:
@@ -338,15 +333,10 @@ deployment.pri:
 ../../../usr/qt/5.5/mingw492_32/mkspecs/features/lex.prf:
 ethmite.pro:
 D:/usr/qt/5.5/mingw492_32/lib/qtmain.prl:
-D:/usr/qt/5.5/mingw492_32/lib/Qt5QuickWidgets.prl:
-D:/usr/qt/5.5/mingw492_32/lib/Qt5Quick.prl:
-D:/usr/qt/5.5/mingw492_32/lib/Qt5Declarative.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Svg.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Widgets.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Gui.prl:
-D:/usr/qt/5.5/mingw492_32/lib/Qt5Qml.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Network.prl:
-D:/usr/qt/5.5/mingw492_32/lib/Qt5Script.prl:
 D:/usr/qt/5.5/mingw492_32/lib/Qt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile ethmite.pro

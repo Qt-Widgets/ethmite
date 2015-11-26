@@ -129,6 +129,7 @@ typedef struct solution_tag {
     int getFreeChannel(int id);
     float getSnr(int channel);
     double *getLla();
+    double getTimeError();
     QTcpSocket *getSocket();
     
 private:

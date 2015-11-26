@@ -8,17 +8,14 @@
 #include "PanelInfo.h"
 
 PanelInfo::PanelInfo() {
-    time = 32768;
-    lla[0] = 1;
-    lla[1] = 0;
-    lla[2] = 0;
+    setTime(32768);
+    setSolution(0.5, 1, 300, 0.12345);
 }
 
 PanelInfo::~PanelInfo() {
 }
 
 void PanelInfo::paintEvent(QPaintEvent* event) {
-    int h, m, s;
     
     PanelWidget::paintEvent(event);
     QPainter p;
@@ -39,26 +36,39 @@ void PanelInfo::paintEvent(QPaintEvent* event) {
     font.setFamily("Consolas");
     p.setFont(font);
 
-    h = qFloor(time / 3600);
-    m = qFloor((time % 3600) / 60);
-    s = qFloor(time % 60);
-    
-    QString lineTime = QString("%1:%2:%3")
-            .arg(h, 2, 10, QChar('0'))
-            .arg(m, 2, 10, QChar('0'))
-            .arg(s, 2, 10, QChar('0'));
-    
-    QString lineLat = QString("Ш[\u00b0] :%1").arg(lla[0] * 57.29577951308, 10, 'f', 5, QChar(' '));
-    QString lineLon = QString("Д[\u00b0] :%1").arg(lla[1] * 57.29577951308, 10, 'f', 5, QChar(' '));
-    QString lineAlt = QString("В[м] :%1").arg(lla[2], 6, 'f', 1, QChar(' '));
-    
     p.drawText(QPointF(0, dy * 1), "01.01.2000");
     p.drawText(QPointF(0, dy * 2), lineTime);
     p.drawText(QPointF(0, dy * 3), lineLat);
     p.drawText(QPointF(0, dy * 4), lineLon);
     p.drawText(QPointF(0, dy * 5), lineAlt);
-    p.drawText(QPointF(0, dy * 6), "\u0394[мс]:   0.000");
+    p.drawText(QPointF(0, dy * 6), lineDt);
     
     p.end();
 }
 
+void PanelInfo::setTime(int value) {
+    int h, m, s;
+    value %= 86400;
+    h = qFloor(value / 3600);
+    m = qFloor((value % 3600) / 60);
+    s = qFloor(value % 60);
+    
+    lineTime = QString("%1:%2:%3")
+            .arg(h, 2, 10, QChar('0'))
+            .arg(m, 2, 10, QChar('0'))
+            .arg(s, 2, 10, QChar('0'));
+    repaint();
+}
+
+void PanelInfo::setSolution(qreal lat, qreal lon, qreal alt, qreal dt) {
+    
+    if ((lat != lat) || (lon != lon) || (alt != alt) || (dt != dt)) {
+        return;
+    }
+    
+    lineLat = QString("Ш [\u00b0]:%1").arg(lat * 57.29577951308, 0, 'f', 5, QChar(' '));
+    lineLon = QString("Д [\u00b0]:%1").arg(lon * 57.29577951308, 0, 'f', 5, QChar(' '));
+    lineAlt = QString("В [м]:%1").arg(alt, 0, 'f', 1, QChar(' '));
+    lineDt  = QString("\u0394[мс]:%1").arg(dt * 1000, 0, 'f', 3, QChar(' '));
+    repaint();
+}

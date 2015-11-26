@@ -16,11 +16,18 @@ class PanelInfo : public PanelWidget {
 public:
     PanelInfo();
     virtual ~PanelInfo();
+    
+    void setTime(int value);
+    void setSolution(qreal lat, qreal lon, qreal alt, qreal dt);
 protected:    
     virtual void paintEvent(QPaintEvent*);
 private:
-    int time;
-    qreal lla[3];
+    QString lineTime;
+    QString lineLat;
+    QString lineLon;
+    QString lineAlt;
+    QString lineDate;
+    QString lineDt;
 };
 
 #endif	/* PANELINFO_H */

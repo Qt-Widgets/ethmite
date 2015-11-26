@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>widget.qml</file>
         <file>world.png</file>
         <file>earth.png</file>
     </qresource>
