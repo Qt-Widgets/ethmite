@@ -6,9 +6,11 @@
  */
 
 #include "PanelInfo.h"
+#include <time.h>
 
 PanelInfo::PanelInfo() {
     setTime(32768);
+    setDate(0);
     setSolution(0.5, 1, 300, 0.12345);
 }
 
@@ -36,7 +38,7 @@ void PanelInfo::paintEvent(QPaintEvent* event) {
     font.setFamily("Consolas");
     p.setFont(font);
 
-    p.drawText(QPointF(0, dy * 1), "01.01.2000");
+    p.drawText(QPointF(0, dy * 1), lineDate);
     p.drawText(QPointF(0, dy * 2), lineTime);
     p.drawText(QPointF(0, dy * 3), lineLat);
     p.drawText(QPointF(0, dy * 4), lineLon);
@@ -57,6 +59,15 @@ void PanelInfo::setTime(int value) {
             .arg(h, 2, 10, QChar('0'))
             .arg(m, 2, 10, QChar('0'))
             .arg(s, 2, 10, QChar('0'));
+    repaint();
+}
+
+void PanelInfo::setDate(time_t value) {
+    struct tm *d = gmtime(&value);
+    lineDate = QString("%1.%2.%3")
+            .arg(d->tm_mday       , 2, 10, QChar('0'))
+            .arg(d->tm_mon + 1    , 2, 10, QChar('0'))
+            .arg(d->tm_year + 1900, 4, 10, QChar('0'));
     repaint();
 }
 

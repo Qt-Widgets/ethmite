@@ -18,6 +18,7 @@ public:
     virtual ~PanelInfo();
     
     void setTime(int value);
+    void setDate(time_t value);
     void setSolution(qreal lat, qreal lon, qreal alt, qreal dt);
 protected:    
     virtual void paintEvent(QPaintEvent*);

@@ -16,10 +16,16 @@ class PanelWorld : public PanelWidget {
 public:
     PanelWorld();
     virtual ~PanelWorld();
+    void setPosition(qreal lat, qreal lon);
+    void setSolution(qreal lat, qreal lon);
 protected:    
     virtual void paintEvent(QPaintEvent*);
 private:
-
+    void drawItems(QPainter *p);
+    qreal latw;
+    qreal lonw;
+    qreal lats;
+    qreal lons;
 };
 
 #endif	/* PANELWORLD_H */

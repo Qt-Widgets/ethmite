@@ -33,14 +33,15 @@ int Satellite::getCount() {
 }
 
 void Satellite::loadAgl(const QString fileName) {
+
+    count = 0;
+    
     QFile file(fileName);
     bool isOpen = file.open(QFile::ReadOnly | QFile::Text);
     
     if (!isOpen) {
         return;
     }
-    
-    count = 0;
     
     QTextStream txt(&file);
     QString line[3];

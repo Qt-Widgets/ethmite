@@ -8,10 +8,10 @@
 #ifndef ETHINTERFACE_H
 #define	ETHINTERFACE_H
 
-//#define DEBUG_LOGFILES
-#ifdef DEBUG_LOGFILES
-#undef DEBUG_LOGFILES
-#endif
+#define DEBUG_LOGFILES
+//#ifdef DEBUG_LOGFILES
+//#undef DEBUG_LOGFILES
+//#endif
 
 #include <QFile>
 #include <QTextStream>
@@ -114,6 +114,7 @@ typedef struct solution_tag {
     typedef struct info_tag {
         uint32_t id;
         int32_t locked;
+        time_t date;
         uint32_t inf[4];
     } info;
     
@@ -125,6 +126,10 @@ typedef struct solution_tag {
     int getId(int channel);
     int getStates(int channel);
     int getTime(int channel);
+    time_t getDate(int channel);
+    float getPower(int channel);
+    int getInfLine(int channel, bool drop);
+    bool solutionIsValid();
     void findFreeChannels();
     int getFreeChannel(int id);
     float getSnr(int channel);
@@ -168,7 +173,10 @@ private:
     QTextStream ssol;
 #endif    
     
+    time_t date[ChannelCount];
+    int infline[ChannelCount];
     bool locked[ChannelCount];
+    float power[ChannelCount];
     int states[ChannelCount];
     int id[ChannelCount];
     int freeChannels[ChannelCount];
@@ -178,6 +186,7 @@ private:
     int time[ChannelCount];
     double xyzt[4];
     double lla[3];
+    bool solution_valid;
     QTcpSocket *tcpSocket;
     QDataStream *ds;
     

@@ -41,6 +41,8 @@ private:
     QString settingAgl;
     int timerIdFast;
     int timerIdSlow;
+    int32_t gaincode;
+    int image_index;
     
     IoForm *ioForm[IoFormCount];
     Ui::MainForm widget;
@@ -64,7 +66,9 @@ private:
     void createTrayIcon();
     void readSettings();
     void setChannel(uint32_t channel, uint32_t id, uint32_t carrier);
-    
+    void setGain(int32_t value);
+    void saveScreen();
+    float gain2db(int value);
 private slots:
     void open();
     void clearLogs();

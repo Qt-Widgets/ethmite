@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QDataStream>
 #include <math.h>
+#include <QDir>
 
 EthInterface::EthInterface() {
     
@@ -17,34 +18,41 @@ EthInterface::EthInterface() {
     lla[0] = 0.0;
     lla[1] = 0.0;
     lla[2] = 0.0;
-        
+    
     plot[0] = new float[PlotLength];
     plot[1] = new float[PlotLength];
-
+    
+    solution_valid = false;
+    
     for (int i = 0; i < ChannelCount; i++) {
         
 #ifdef DEBUG_LOGFILES
-        frsa[i].setFileName(QString("%1/rsa.txt").arg(i));
+        
+        if (!QDir::current().exists("logs")) {
+            QDir::current().mkdir("logs");
+        }
+        
+        frsa[i].setFileName(QString("logs/%1rsa.txt").arg(i));
         frsa[i].open(QFile::WriteOnly | QFile::Text);
         srsa[i].setDevice(&frsa[i]);
         
-        frha[i].setFileName(QString("%1/rha.txt").arg(i));
+        frha[i].setFileName(QString("logs/%1rha.txt").arg(i));
         frha[i].open(QFile::WriteOnly | QFile::Text);
         srha[i].setDevice(&frha[i]);
         
-        ffsa[i].setFileName(QString("%1/fsa.txt").arg(i));
+        ffsa[i].setFileName(QString("logs/%1fsa.txt").arg(i));
         ffsa[i].open(QFile::WriteOnly | QFile::Text);
         sfsa[i].setDevice(&ffsa[i]);
         
-        ffha[i].setFileName(QString("%1/fha.txt").arg(i));
+        ffha[i].setFileName(QString("logs/%1fha.txt").arg(i));
         ffha[i].open(QFile::WriteOnly | QFile::Text);
         sfha[i].setDevice(&ffha[i]);
         
-        fisa[i].setFileName(QString("%1/isa.txt").arg(i));
+        fisa[i].setFileName(QString("logs/%1isa.txt").arg(i));
         fisa[i].open(QFile::WriteOnly | QFile::Text);
         sisa[i].setDevice(&fisa[i]);
         
-        fiha[i].setFileName(QString("%1/iha.txt").arg(i));
+        fiha[i].setFileName(QString("logs/%1iha.txt").arg(i));
         fiha[i].open(QFile::WriteOnly | QFile::Text);
         siha[i].setDevice(&fiha[i]);
 #endif        
@@ -53,10 +61,12 @@ EthInterface::EthInterface() {
         snr[i] = 0.0;
         time[i] = 0;
         id[i] = 0;
+        date[i] = 0;
+        infline[i] = 0;
     }
     
 #ifdef DEBUG_LOGFILES
-    fsol.setFileName("sol.txt");
+    fsol.setFileName("logs/sol.txt");
     fsol.open(QFile::WriteOnly | QFile::Text);
     ssol.setDevice(&fsol);
 #endif
@@ -147,6 +157,26 @@ int EthInterface::getTime(int channel) {
     return time[channel];
 }
 
+time_t EthInterface::getDate(int channel) {
+    return date[channel];
+}
+
+float EthInterface::getPower(int channel) {
+    return power[channel];
+}
+
+int EthInterface::getInfLine(int channel, bool drop) {
+    int value = infline[channel];
+    if (drop) {
+        infline[channel] = 0;
+    }
+    return value;
+}
+
+bool EthInterface::solutionIsValid() {
+    return solution_valid;
+}
+
 void EthInterface::clear() {
 
 #ifdef DEBUG_LOGFILES
@@ -223,6 +253,7 @@ void EthInterface::execCommand() {
                 locked[lprs->id] = (bool)lprs->locked;
                 states[lprs->id] = lprs->locked ? states[lprs->id] | 0x01 : states[lprs->id] & 0xFE;
                 time[lprs->id] = lprs->index;
+                power[lprs->id] = lprs->power;
             }
             break;
         case CmdAddrLprsHa: 
@@ -269,6 +300,8 @@ void EthInterface::execCommand() {
                 sisa[inf->id].flush();
 #endif
                 states[inf->id] = inf->locked ? states[inf->id] | 0x04 : states[inf->id] & 0xFB;
+                date[inf->id] = inf->date;
+                infline[inf->id] = (inf->inf[0] >> 27) & 0x1F;
             }
             break;
         case CmdAddrInfoHa:
@@ -289,6 +322,7 @@ void EthInterface::execCommand() {
             if (slv->count > 0 && slv->count <= ChannelCount) {
                 puts("");
                 printf("%d\t%f\t%12.4lf\n", slv->count, slv->err, slv->dt * 1000);
+                solution_valid = (slv->is_valid > 0);
 //                for (int i = 0; i < slv->count; i++) {
 //                    printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12e\n",
 //                            slv->rng[i], 

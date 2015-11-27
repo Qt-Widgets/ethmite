@@ -15,6 +15,13 @@
 
 class Satellite {
 public:
+
+    static const double FrequencyL1         = 1602000000.0;
+    static const double FrequencyL2         = 1246000000.0;
+    static const double FrequencyL3         = 1202025000.0;
+    static const double FrequencyL1Delta    = 562500.0;
+    static const double FrequencyL2Delta    = 437500.0;
+    
     Satellite();
     virtual ~Satellite();
     void loadAgl(const QString fileName);
@@ -38,12 +45,6 @@ private:
     static const double SpeedOfLight        = 299792458.0;
     
     static const int    AglCount            = 32;
-    static const double FrequencyL1         = 1602000000.0;
-    static const double FrequencyL2         = 1246000000.0;
-    static const double FrequencyL3         = 1202025000.0;
-    static const double FrequencyL1Delta    = 562500.0;
-    static const double FrequencyL2Delta    = 437500.0;
-    
     kstruct agl[AglCount];
     double locationGasc[6];
     double locationLla[3]; //lat lon alt

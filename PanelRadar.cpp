@@ -27,8 +27,7 @@ void PanelRadar::paintEvent(QPaintEvent* event) {
     
     QPen pen = p.pen();
     pen.setWidth(1);
-    pen.setColor(QColor("black"));
-    p.setPen(pen);
+    p.setPen(QColor("black"));
     
     QPainterPath path;
     qreal rx = p.device()->width();
@@ -46,8 +45,6 @@ void PanelRadar::paintEvent(QPaintEvent* event) {
     p.drawLine(rx * scale0 + 1, ry * scale0 + 1, rx * scale1 - 1, ry * scale1 - 1);
     p.drawLine(rx * scale0 + 1, ry * scale1 - 1, rx * scale1 - 1, ry * scale0 + 1);
     
-//    pen.setColor(QColor("green"));
-//    p.setPen(pen);
     drawItems(&p);
     
     p.end();
@@ -90,7 +87,9 @@ void PanelRadar::drawItems(QPainter *p) {
             QPainterPath path;
             path.addEllipse(QPointF(x, y), r, r);
             p->fillPath(path, QColor("lightgreen"));
+            p->setPen(QColor("green"));
             p->drawPath(path);
+            p->setPen(QColor("black"));
             p->drawText(QRectF(x - r, y - r, 2 * r, 2 * r), Qt::AlignCenter, label);
         }
     }
