@@ -40,100 +40,103 @@ MainForm::MainForm() {
     
     labelInfo = new QLabel(widget.statusbar);
     widget.statusbar->addWidget(labelInfo, 1);
+    
     readSettings();
+    com = new EthInterface(settingTimeOffset, settingUdpPort);
+    
     createActions();
     createTrayIcon();
     trayIcon->show();
     
     gaincode = 128;
     
-    widgetWorld->setPosition(M_PI * 55.0 / 180.0, M_PI * 37.0 / 180.0);
+    widgetWorld->setPosition(settingLat, settingLon);
     
-    ioForm[0] = new IoForm(&com, EthInterface::CmdAddrLprsSa, 
+    ioForm[0] = new IoForm(com, EthInterface::CmdAddrLprsSa, 
             offsetof(EthInterface::loop_prs, level), 
             IoForm::FLOAT, 
             "Level"
         );
     
-    ioForm[1] = new IoForm(&com, EthInterface::CmdAddrLprsSa, 
+    ioForm[1] = new IoForm(com, EthInterface::CmdAddrLprsSa, 
             offsetof(EthInterface::loop_prs, offset), 
             IoForm::UINT32, 
             "Offset"
         );
     
-    ioForm[2] = new IoForm(&com, EthInterface::CmdAddrLcarSa, 
+    ioForm[2] = new IoForm(com, EthInterface::CmdAddrLcarSa, 
             offsetof(EthInterface::loop_car, code), 
             IoForm::INT32, 
             "Carrier"
         );
     
-    ioForm[3] = new IoForm(&com, EthInterface::CmdAddrLprsSa, 
+    ioForm[3] = new IoForm(com, EthInterface::CmdAddrLprsSa, 
             offsetof(EthInterface::loop_prs, k[0]), 
             IoForm::FLOAT, 
             "DLL K0"
         );
     
-    ioForm[4] = new IoForm(&com, EthInterface::CmdAddrLprsSa, 
+    ioForm[4] = new IoForm(com, EthInterface::CmdAddrLprsSa, 
             offsetof(EthInterface::loop_prs, k[1]), 
             IoForm::FLOAT, 
             "DLL K1"
         );
 
-    ioForm[5] = new IoForm(&com, EthInterface::CmdAddrLcarSa, 
+    ioForm[5] = new IoForm(com, EthInterface::CmdAddrLcarSa, 
             offsetof(EthInterface::loop_car, k[0]), 
             IoForm::FLOAT, 
             "PLL K0"
         );
     
-    ioForm[6] = new IoForm(&com, EthInterface::CmdAddrLcarSa, 
+    ioForm[6] = new IoForm(com, EthInterface::CmdAddrLcarSa, 
             offsetof(EthInterface::loop_car, k[1]), 
             IoForm::FLOAT, 
             "PLL K1"
         );
 
-    ioForm[7] = new IoForm(&com, EthInterface::CmdAddrLprsHa, 
+    ioForm[7] = new IoForm(com, EthInterface::CmdAddrLprsHa, 
             offsetof(EthInterface::loop_prs, level), 
             IoForm::FLOAT, 
             "Level"
         );
     
-    ioForm[8] = new IoForm(&com, EthInterface::CmdAddrLcarHa, 
+    ioForm[8] = new IoForm(com, EthInterface::CmdAddrLcarHa, 
             offsetof(EthInterface::loop_car, code), 
             IoForm::INT32, 
             "Carrier"
         );
    
-    ioForm[9] = new IoForm(&com, EthInterface::CmdAddrLprsHa, 
+    ioForm[9] = new IoForm(com, EthInterface::CmdAddrLprsHa, 
             offsetof(EthInterface::loop_prs, offset), 
             IoForm::UINT32, 
             "Offset"
         );
    
-    ioForm[10] = new IoForm(&com, EthInterface::CmdAddrLprsHa, 
+    ioForm[10] = new IoForm(com, EthInterface::CmdAddrLprsHa, 
             offsetof(EthInterface::loop_prs, k[0]), 
             IoForm::FLOAT, 
             "DLL K0"
         );
     
-    ioForm[11] = new IoForm(&com, EthInterface::CmdAddrLprsHa, 
+    ioForm[11] = new IoForm(com, EthInterface::CmdAddrLprsHa, 
             offsetof(EthInterface::loop_prs, k[1]), 
             IoForm::FLOAT, 
             "DLL K1"
         );
 
-    ioForm[15] = new IoForm(&com, EthInterface::CmdAddrControl, 
+    ioForm[15] = new IoForm(com, EthInterface::CmdAddrControl, 
             offsetof(EthInterface::state_ifc, buf_param), 
             IoForm::UINT8, 
             "Parameter"
         );
    
-    ioForm[16] = new IoForm(&com, EthInterface::CmdAddrControl, 
+    ioForm[16] = new IoForm(com, EthInterface::CmdAddrControl, 
             offsetof(EthInterface::state_ifc, buf_channel), 
             IoForm::UINT32, 
             "Channel"
         );
    
-    ioForm[17] = new IoForm(&com, EthInterface::CmdAddrVga, 
+    ioForm[17] = new IoForm(com, EthInterface::CmdAddrVga, 
             0, 
             IoForm::UINT32, 
             "VGA"
@@ -182,7 +185,7 @@ MainForm::MainForm() {
     connect(widget.btnOpen, SIGNAL(clicked()), this, SLOT(clearLogs()));
     connect(widget.btnPlot, SIGNAL(clicked()), this, SLOT(plot()));
     connect(widget.btnSend, SIGNAL(clicked()), this, SLOT(setSatelliteIndex()));
-    connect(&com, SIGNAL(readyPlot(float **)), this, SLOT(readyPlotSlot(float **)));
+    connect(com, SIGNAL(readyPlot(float **)), this, SLOT(readyPlotSlot(float **)));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
     timerIdFast = startTimer(200);
@@ -190,24 +193,24 @@ MainForm::MainForm() {
 }
 
 void MainForm::timerEvent(QTimerEvent * event) {
-    QTcpSocket *s = com.getSocket();
+    QTcpSocket *s = com->getSocket();
     
     if (event->timerId() == timerIdFast) {
         for (int i = 0; i < ChannelCount; i++) {
-            QColor c = com.isLocked(i) ? Qt::green : Qt::yellow;
+            QColor c = com->isLocked(i) ? Qt::green : Qt::yellow;
             leds[i]->setState(c);
-            widgetDiagram->setDiagramItem(i, com.getStates(i), com.getId(i), com.getSnr(i) * 0.02);
+            widgetDiagram->setDiagramItem(i, com->getStates(i), com->getId(i), com->getSnr(i) * 0.02);
         }
         
-        if (com.solutionIsValid()) {
-            widgetInfo->setSolution(com.getLla()[0], com.getLla()[1], com.getLla()[2], com.getTimeError());
-            widgetWorld->setSolution(com.getLla()[0], com.getLla()[1]);
+        if (com->solutionIsValid()) {
+            widgetInfo->setSolution(com->getLla()[0], com->getLla()[1], com->getLla()[2], com->getTimeError());
+            widgetWorld->setSolution(com->getLla()[0], com->getLla()[1]);
         }
         
         for (int i = 0; i < ChannelCount; i++) {
-            if (com.getStates(i) == 7) {
-                widgetInfo->setTime(com.getTime(i));
-                widgetInfo->setDate(com.getDate(i));
+            if (com->getStates(i) == 7) {
+                widgetInfo->setTime(com->getTime(i));
+                widgetInfo->setDate(com->getDate(i));
                 break;
             }
         }
@@ -217,26 +220,26 @@ void MainForm::timerEvent(QTimerEvent * event) {
         open();
         setSatelliteIndex();
         QString s1 = (s->state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
-        QString s2 = (com.solutionIsValid()) ? "Да" : "Нет";
-        float pwr = com.getPower(0);
+        QString s2 = (com->solutionIsValid()) ? "Да" : "Нет";
+        float pwr = com->getPower(0);
         pwr = (pwr > 0.0) ? log10f(pwr) * 10.0 : 0.0;
         float db = gain2db(gaincode);
-        if (pwr < 65.0) {
+        if (pwr < settingMinPower) {
             gaincode = (gaincode + 5 > 255) ? 255 : gaincode + 5;
             setGain(gaincode);
         }
         else {
-            if (pwr > 75.0) {
+            if (pwr > settingMaxPower) {
                 gaincode = ((gaincode - 5 < 128) ? 128 : gaincode - 5);
                 setGain(gaincode);
             }
         }
-        
+        db = gain2db(com->getGain());
         labelInfo->setText(QString( "Соединение: %1 \tОбмен: %2 \t"
                                     "Антенна: %3 дБ \tУсиление: %4 дБ\t"
                                     "Решение: %5")
             .arg(s1).arg(s1).arg(pwr - db, 0, 'f', 1).arg(db, 0, 'f', 1).arg(s2));
-        saveScreen();
+//        saveScreen();
     }
 }
 
@@ -244,17 +247,17 @@ MainForm::~MainForm() {
 }
 
 void MainForm::open() {
-    QTcpSocket *s = com.getSocket();
+    QTcpSocket *s = com->getSocket();
     
     switch (s->state()) {
         case QTcpSocket::ConnectedState     :
-//            com.close();
+//            com->close();
 //            widget.teLog->appendPlainText(QString("Disconnecting"));
             break;
         case QTcpSocket::UnconnectedState   :
             s->connectToHost(settingIp, settingPort);
             widget.teLog->appendPlainText(QString("Connecting to: %1:%2").arg(settingIp).arg(settingPort));
-            com.clear();
+            com->clear();
             break;
         default:
             widget.teLog->appendPlainText(QString("Socket state: %1").arg(s->state()));
@@ -263,7 +266,7 @@ void MainForm::open() {
 }
 
 void MainForm::clearLogs() {
-    com.clear();
+    com->clear();
     image_index = 0;
 }
 
@@ -277,7 +280,7 @@ void MainForm::readyPlotSlot(float **plot) {
 
 void MainForm::setChannel(uint32_t channel, uint32_t id, uint32_t carrier) {
     EthInterface::command cmd;
-    QTcpSocket *s = com.getSocket();
+    QTcpSocket *s = com->getSocket();
     
     if (s->isOpen() && s->state() == QTcpSocket::ConnectedState && s->isValid() && s->isWritable()) {
         cmd.cmd  = EthInterface::CmdWrite;
@@ -286,40 +289,40 @@ void MainForm::setChannel(uint32_t channel, uint32_t id, uint32_t carrier) {
         cmd.addr = (EthInterface::CmdAddrLprsSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
         cmd.value = id;
         cmd.offset = offsetof(EthInterface::loop_prs, number) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
         cmd.value = 0;
         cmd.offset = offsetof(EthInterface::loop_prs, error) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
 
         cmd.addr = (EthInterface::CmdAddrLprsHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
         cmd.value = id;
         cmd.offset = offsetof(EthInterface::loop_prs, number) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
         cmd.value = 0;
         cmd.offset = offsetof(EthInterface::loop_prs, error) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
 
         cmd.addr = (EthInterface::CmdAddrLcarSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
         cmd.value = carrier;
         cmd.offset = offsetof(EthInterface::loop_car, code) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
         cmd.value = 0;
         cmd.offset = offsetof(EthInterface::loop_car, error) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
 
         cmd.addr = (EthInterface::CmdAddrLcarHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
         cmd.value = carrier;
         cmd.offset = offsetof(EthInterface::loop_car, code) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
         cmd.value = 0;
         cmd.offset = offsetof(EthInterface::loop_car, error) / sizeof(uint32_t);
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
     }
 }
 
 void MainForm::setGain(int32_t value) {
     EthInterface::command cmd;
-    QTcpSocket *s = com.getSocket();
+    QTcpSocket *s = com->getSocket();
     
     if (s->isOpen() && s->state() == QTcpSocket::ConnectedState && s->isValid() && s->isWritable()) {
         
@@ -329,16 +332,17 @@ void MainForm::setGain(int32_t value) {
         cmd.addr = EthInterface::CmdAddrVga;
         cmd.value = (uint32_t)(value & 0xFF);
         cmd.offset = 0;
-        com.sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
     }
 }
 
 void MainForm::setSatelliteIndex() {
     int c = 0;
-    Satellite sat;
+    Satellite sat(settingLat, settingLon, settingAlt);
     sat.loadAgl(settingAgl);
+    
     if (sat.getCount() > 0) {
-        com.findFreeChannels();
+        com->findFreeChannels();
 
         for (int i = 0; i < sat.getCount(); i++) {
             if (sat.isValid(i)) {
@@ -350,7 +354,7 @@ void MainForm::setSatelliteIndex() {
                     double f = sat.getFrequencyL1Current(i);
                     f -= 1575000000.0;
                     f = f * 4294967296.0 / 100000000.0;
-                    c = com.getFreeChannel(i + 1);
+                    c = com->getFreeChannel(i + 1);
                     if (c >= 0) {
                         setChannel((uint32_t)c, (uint32_t)(i + 1), (uint32_t)f);
                     }
@@ -359,9 +363,9 @@ void MainForm::setSatelliteIndex() {
         }
     }
     else {
-        for (int i = 0; i < com.ChannelCount; i++) {
-            int infline = com.getInfLine(i, true);
-            if (((com.getStates(i) & 3) != 3) || (infline < 1) || (infline > 15)) {
+        for (int i = 0; i < com->ChannelCount; i++) {
+            int infline = com->getInfLine(i, true);
+            if (((com->getStates(i) & 3) != 3) || (infline < 1) || (infline > 15)) {
                 double f = sat.FrequencyL1 + sat.FrequencyL1Delta * (i - 3);
                 f -= 1575000000.0;
                 f = f * 4294967296.0 / 100000000.0;
@@ -437,6 +441,18 @@ void MainForm::readSettings() {
     settingIp = settings.value("ip", DefaultSettingIp).toString();
     settingPort = (quint16)settings.value("port", DefaultSettingPort).toUInt();
     settingAgl = settings.value("agl", DefaultSettingAgl).toString();
+
+    settingTimeOffset = settings.value("timeOffset", DefaultSettingTimeOffset).toInt();
+    settingSlvCount = settings.value("slvCount", DefaultSettingSlvCount).toInt();
+    settingUdpPort = (quint16)settings.value("udpPort", DefaultSettingUdpPort).toUInt();
+    
+    settingMaxPower = settings.value("maxPower", DefaultSettingMaxPower).toFloat();
+    settingMinPower = settings.value("minPower", DefaultSettingMinPower).toFloat();
+    
+    settingLat = settings.value("lat", DefaultSettingLat).toDouble() * M_PI / 180.0;
+    settingLon = settings.value("lon", DefaultSettingLon).toDouble() * M_PI / 180.0;
+    settingAlt = settings.value("alt", DefaultSettingAlt).toDouble();
+    
 }
 
 void MainForm::saveScreen() {

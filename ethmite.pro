@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     PanelRadar.cpp \
     PanelDiagram.cpp \
     PanelWorld.cpp \
-    PanelInfo.cpp
+    PanelInfo.cpp \
+    TimeSender.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,7 +39,8 @@ HEADERS += \
     PanelRadar.h \
     PanelDiagram.h \
     PanelWorld.h \
-    PanelInfo.h
+    PanelInfo.h \
+    TimeSender.h
 
 win32: {
     RC_FILE = ethmite.rc

@@ -9,15 +9,16 @@
 #define	ETHINTERFACE_H
 
 #define DEBUG_LOGFILES
-//#ifdef DEBUG_LOGFILES
-//#undef DEBUG_LOGFILES
-//#endif
+#ifdef DEBUG_LOGFILES
+#undef DEBUG_LOGFILES
+#endif
 
 #include <QFile>
 #include <QTextStream>
 #include <QTcpSocket>
 #include "inttypes.h"
 #include "gloinf.h"
+#include "TimeSender.h"
 
 class EthInterface : public QObject {
     Q_OBJECT
@@ -35,6 +36,7 @@ public:
     static const uint32_t CmdAddrLcarHa   = 5;
     static const uint32_t CmdAddrInfoHa   = 6;
 
+    static const uint32_t CmdAddrSettings = 11;
     static const uint32_t CmdAddrFrame    = 12;
     static const uint32_t CmdAddrSlv      = 13;
     static const uint32_t CmdAddrVga      = 14;
@@ -60,7 +62,7 @@ public:
         uint32_t rc;
         uint32_t phase;
         double range;
-        double sat[10];
+//        double sat[10];
         float power;
     } loop_prs;
     
@@ -117,8 +119,15 @@ typedef struct solution_tag {
         time_t date;
         uint32_t inf[4];
     } info;
-    
-    EthInterface();
+
+#pragma pack (1)
+    typedef struct rx_settings_tag {
+        int32_t gain;
+        int32_t slv_count;
+        float power;
+    } rx_settings;
+
+    EthInterface(int timeOffset, quint16 udpPort);
     virtual ~EthInterface();
     void sendPacket(uint32_t *data, int dlen);
     void clear();
@@ -135,6 +144,7 @@ typedef struct solution_tag {
     float getSnr(int channel);
     double *getLla();
     double getTimeError();
+    int getGain();
     QTcpSocket *getSocket();
     
 private:
@@ -181,14 +191,17 @@ private:
     int id[ChannelCount];
     int freeChannels[ChannelCount];
     int freeChannelsCount;
-    
+
     float snr[ChannelCount];
     int time[ChannelCount];
     double xyzt[4];
     double lla[3];
     bool solution_valid;
+    int timeOffset;
+    rx_settings settings;
     QTcpSocket *tcpSocket;
     QDataStream *ds;
+    TimeSender *timeSender;
     
     bool acceptData(uint32_t value);
     void acceptPlot();

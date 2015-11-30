@@ -22,7 +22,7 @@ public:
     static const double FrequencyL1Delta    = 562500.0;
     static const double FrequencyL2Delta    = 437500.0;
     
-    Satellite();
+    Satellite(double lat, double lon, double alt);
     virtual ~Satellite();
     void loadAgl(const QString fileName);
     double getFrequencyL3Current(int index) const;

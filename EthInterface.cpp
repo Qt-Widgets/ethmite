@@ -11,10 +11,15 @@
 #include <math.h>
 #include <QDir>
 
-EthInterface::EthInterface() {
+EthInterface::EthInterface(int timeOffset, quint16 udpPort) {
     
     tcpSocket = new QTcpSocket(this);
     ds = new QDataStream(tcpSocket);
+    
+    timeSender = new TimeSender(udpPort);
+    
+    this->timeOffset = timeOffset;
+    
     lla[0] = 0.0;
     lla[1] = 0.0;
     lla[2] = 0.0;
@@ -23,6 +28,7 @@ EthInterface::EthInterface() {
     plot[1] = new float[PlotLength];
     
     solution_valid = false;
+    memset(&settings, 0, sizeof(rx_settings));
     
     for (int i = 0; i < ChannelCount; i++) {
         
@@ -219,11 +225,14 @@ void EthInterface::execCommand() {
     loop_car *lcar = (loop_car *)&buffer[2];
     info     *inf  = (info     *)&buffer[2];
     solution *slv  = (solution *)&buffer[2];
+    rx_settings *set  = (rx_settings *)&buffer[2];
 
+#ifdef DEBUG_LOGFILES
     static int iprssa[ChannelCount];
     static int iprsha[ChannelCount];
     static int icarsa[ChannelCount];
     static int icarha[ChannelCount];
+#endif
     
     switch (buffer[1]) {
         case CmdAddrLprsSa: 
@@ -234,16 +243,16 @@ void EthInterface::execCommand() {
                     iprssa[lprs->id] = lprs->index;
                     srsa[lprs->id] 
                             << lprs->number << "\t" << lprs->index    << "\t" 
-                            << QString::number(lprs->sat[0], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[1], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[2], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[3], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[4], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[5], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[6], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[7], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[8], 'g', 12) << "\t" 
-                            << QString::number(lprs->sat[9], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[0], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[1], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[2], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[3], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[4], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[5], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[6], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[7], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[8], 'g', 12) << "\t" 
+//                            << QString::number(lprs->sat[9], 'g', 12) << "\t" 
                             << QString::number(lprs->range , 'g', 12) << "\n";
                     srsa[lprs->id].flush();
                 }
@@ -252,8 +261,12 @@ void EthInterface::execCommand() {
                 id[lprs->id] = lprs->number;
                 locked[lprs->id] = (bool)lprs->locked;
                 states[lprs->id] = lprs->locked ? states[lprs->id] | 0x01 : states[lprs->id] & 0xFE;
-                time[lprs->id] = lprs->index;
+                time[lprs->id] = lprs->index + timeOffset;
                 power[lprs->id] = lprs->power;
+                
+                if (states[lprs->id] == 0x7) {
+                    timeSender->setTime(time[lprs->id]);
+                }
             }
             break;
         case CmdAddrLprsHa: 
@@ -345,9 +358,12 @@ void EthInterface::execCommand() {
 #endif
             setSolution(slv->loc[0], slv->loc[1], slv->loc[2], slv->dt);
             break;
-//        default: 
+        case CmdAddrSettings:
+            memcpy(&settings, set, sizeof(rx_settings));
+            break;
+        default: 
 //            printf("default\n");
-//            break;
+            break;
     }
     if (buffer[1] >= CmdAddrPlot) {
         acceptPlot();
@@ -372,6 +388,10 @@ double EthInterface::getTimeError() {
 
 double *EthInterface::getLla() {
     return lla;
+}
+
+int EthInterface::getGain() {
+    return settings.gain;
 }
 
 void EthInterface::xyz2lla(double *xyz, double *lla) {

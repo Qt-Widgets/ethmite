@@ -12,13 +12,9 @@
 #include "math.h"
 #include "time.h"
 
-Satellite::Satellite() {
+Satellite::Satellite(double lat, double lon, double alt) {
     count = 0;
-    setLocationLla(
-            55.7522222 * M_PI / 180.0, 
-            37.6155556 * M_PI / 180.0, 
-            153.0
-        );
+    setLocationLla(lat, lon, alt);
     
     for (int i = 0; i < AglCount; i++) {
         agl[i].valid = 0;

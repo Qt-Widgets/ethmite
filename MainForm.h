@@ -32,13 +32,38 @@ private:
     static const int IoFormCount = 18;
     static const int ChannelCount = 8;
     static const int RadarChannelCount = 24;
+    
+    static const int DefaultSettingTimeOffset = 1;
+    static const int DefaultSettingSlvCount = 5;
+
     static const quint16 DefaultSettingPort = 5001;
+    static const quint16 DefaultSettingUdpPort = 14003;
+
+    static const float  DefaultSettingMaxPower = 75.0;
+    static const float  DefaultSettingMinPower = 65.0;
+    
+    static const double DefaultSettingLat = 55.75;
+    static const double DefaultSettingLon = 37.72;
+    static const double DefaultSettingAlt = 150.0;
+
     static const QString DefaultSettingIp;
     static const QString DefaultSettingAgl;
-
+    
+    int settingTimeOffset;
+    int settingSlvCount;
     quint16 settingPort;
+    quint16 settingUdpPort;
+    
+    float settingMaxPower;
+    float settingMinPower;
+    
+    double settingLat;
+    double settingLon;
+    double settingAlt;
+    
     QString settingIp;
     QString settingAgl;
+    
     int timerIdFast;
     int timerIdSlow;
     int32_t gaincode;
@@ -46,7 +71,7 @@ private:
     
     IoForm *ioForm[IoFormCount];
     Ui::MainForm widget;
-    EthInterface com;
+    EthInterface *com;
     PlotForm plotForm;
     QLed *leds[IoFormCount];
     QSystemTrayIcon *trayIcon;
