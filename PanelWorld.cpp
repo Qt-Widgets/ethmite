@@ -12,6 +12,7 @@ PanelWorld::PanelWorld() {
     lonw = 0.0;
     lats = 0.0;
     lons = 0.0;
+    is_valid = false;
 }
 
 PanelWorld::~PanelWorld() {
@@ -40,13 +41,11 @@ void PanelWorld::paintEvent(QPaintEvent* event) {
 
 void PanelWorld::drawItems(QPainter *p) {
     
-    QString label;
-    bool visible;
     qreal xw, yw, xs, ys;
     
     qreal w = (qreal)p->device()->width();
     qreal h = (qreal)p->device()->height();
-    qreal r = qMin(w, h) * 0.05;
+    qreal r = qMin(w, h) * 0.025;
 
     xw = 0.5 * (1.0 + lonw / M_PI) * w;
     yw = (0.5 - latw / M_PI) * h;
@@ -54,14 +53,17 @@ void PanelWorld::drawItems(QPainter *p) {
     ys = (0.5 - lats / M_PI) * h;
 
     QPainterPath path;
-    p->setPen(Qt::NoPen);
+    p->setPen(PanelWidget::ColorPenInfLocked);
     path.addEllipse(QPointF(xw, yw), r, r);
-    p->fillPath(path, QColor::fromRgbF(1.0, 0.0, 0.0, 0.3));
+//    p->fillPath(path, QColor::fromRgbF(1.0, 0.0, 0.0, 0.3));
+    p->fillPath(path, PanelWidget::ColorInfLocked);
     p->drawPath(path);
-    p->setPen("green");
-    p->drawLine(0, ys, w, ys);
-    p->drawLine(xs, 0, xs, h);
 
+    if (is_valid) {
+        p->setPen(PanelWidget::ColorPenInfLocked);
+        p->drawLine(0, ys, w, ys);
+        p->drawLine(xs, 0, xs, h);
+    }
 }
 void PanelWorld::setPosition(qreal lat, qreal lon) {
     latw = lat;
@@ -69,8 +71,9 @@ void PanelWorld::setPosition(qreal lat, qreal lon) {
     repaint();
 }
 
-void PanelWorld::setSolution(qreal lat, qreal lon) {
+void PanelWorld::setSolution(qreal lat, qreal lon, bool is_valid) {
     lats = lat;
     lons = lon;
+    this->is_valid = is_valid;
     repaint();
 }

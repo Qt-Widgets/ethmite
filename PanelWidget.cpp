@@ -7,6 +7,17 @@
 
 #include "PanelWidget.h"
 
+const QColor PanelWidget::ColorNotLocked = QColor("lightgray");
+const QColor PanelWidget::ColorDllLocked = QColor("lightgray");
+const QColor PanelWidget::ColorPllLocked = QColor("lightyellow");
+const QColor PanelWidget::ColorInfLocked = QColor("lightgreen");
+
+const QColor PanelWidget::ColorPenNotLocked = QColor("gray");
+const QColor PanelWidget::ColorPenDllLocked = QColor("gray");
+const QColor PanelWidget::ColorPenPllLocked = QColor("gray");
+const QColor PanelWidget::ColorPenInfLocked = QColor("gray");
+
+
 PanelWidget::PanelWidget() {
     this->resize(400, 300);
     this->setAutoFillBackground(true);

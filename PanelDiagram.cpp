@@ -7,16 +7,6 @@
 
 #include "PanelDiagram.h"
 
-const QColor PanelDiagram::ColorNotLocked = QColor("lightgray");
-const QColor PanelDiagram::ColorDllLocked = QColor("lightgray");
-const QColor PanelDiagram::ColorPllLocked = QColor("lightyellow");
-const QColor PanelDiagram::ColorInfLocked = QColor("lightgreen");
-
-const QColor PanelDiagram::ColorPenNotLocked = QColor("gray");
-const QColor PanelDiagram::ColorPenDllLocked = QColor("gray");
-const QColor PanelDiagram::ColorPenPllLocked = QColor("yellow");
-const QColor PanelDiagram::ColorPenInfLocked = QColor("green");
-
 PanelDiagram::PanelDiagram() {
     items = new DiagramItem[ChannelCount]();
 }
@@ -55,8 +45,6 @@ void PanelDiagram::drawItems(QPainter *p) {
     font.setFamily("Consolas");
     p->setFont(font);
 
-    QPen pen = p->pen();
-    
     for (int i = 0; i < ChannelCount; i++) {
         h = 1 + items[i].value * ((qreal)p->device()->height() - 1);
         y = (qreal)p->device()->height() - h;
@@ -65,35 +53,32 @@ void PanelDiagram::drawItems(QPainter *p) {
         
         switch (items[i].state) {
             case StateDllLocked:
-                pen.setColor(ColorPenDllLocked);
-                p->setPen(pen);
+                p->setPen(ColorPenDllLocked);
                 p->fillPath(path, ColorDllLocked);
                 break;
             case StatePllLocked:
-                pen.setColor(ColorPenPllLocked);
-                p->setPen(pen);
+                p->setPen(ColorPenPllLocked);
                 p->fillPath(path, ColorPllLocked);
                 break;
             case StateInfLocked:
-                pen.setColor(ColorPenInfLocked);
-                p->setPen(pen);
+                p->setPen(ColorPenInfLocked);
                 p->fillPath(path, ColorInfLocked);
                 break;
             case StateNotLocked:
             default:
-                pen.setColor(ColorPenNotLocked);
-                p->setPen(pen);
+                p->setPen(ColorPenNotLocked);
                 p->fillPath(path, ColorNotLocked);
                 break;
         }
 
         p->drawPath(path);
-        pen.setColor("black");
-        p->setPen(pen);
-        h = (qreal)p->device()->height();
-        y = (qreal)p->device()->height() - h;
-        label = QString("%1").arg(items[i].label, 2, 10, QChar('0'));
-        p->drawText(QRectF(x + dx * i, y, w, h), Qt::AlignBottom | Qt::AlignHCenter, label);
+        if (items[i].label > 0) {
+            p->setPen(QColor("black"));
+            h = (qreal)p->device()->height();
+            y = (qreal)p->device()->height() - h;
+            label = QString("%1").arg(items[i].label, 2, 10, QChar('0'));
+            p->drawText(QRectF(x + dx * i, y, w, h), Qt::AlignBottom | Qt::AlignHCenter, label);
+        }
     }
 }
 

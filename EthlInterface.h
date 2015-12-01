@@ -9,9 +9,9 @@
 #define	ETHINTERFACE_H
 
 #define DEBUG_LOGFILES
-#ifdef DEBUG_LOGFILES
-#undef DEBUG_LOGFILES
-#endif
+//#ifdef DEBUG_LOGFILES
+//#undef DEBUG_LOGFILES
+//#endif
 
 #include <QFile>
 #include <QTextStream>
@@ -45,7 +45,7 @@ public:
     static const uint32_t CmdAddrPlot   = 16;
 #pragma pack (1)
     typedef struct loop_prs_tag {
-        uint32_t id;
+        int32_t id;
         int32_t number;
         uint32_t locked;
         uint32_t tout;
@@ -63,12 +63,12 @@ public:
         uint32_t phase;
         double range;
 //        double sat[10];
-        float power;
+        int32_t ms;
     } loop_prs;
     
 #pragma pack (1)
     typedef struct loop_car_tag {
-        uint32_t id;
+        int32_t id;
         uint32_t enabled;
         uint32_t locked;
         uint32_t tout;
@@ -114,10 +114,10 @@ typedef struct solution_tag {
 
 #pragma pack (1)
     typedef struct info_tag {
-        uint32_t id;
+        int32_t id;
         int32_t locked;
         time_t date;
-        uint32_t inf[4];
+        int32_t inf[4];
     } info;
 
 #pragma pack (1)
@@ -133,10 +133,11 @@ typedef struct solution_tag {
     void clear();
     bool isLocked(int channel);
     int getId(int channel);
-    int getStates(int channel);
-    int getTime(int channel);
-    time_t getDate(int channel);
-    float getPower(int channel);
+    int getState(int channel);
+    int getIdState(int id);
+    int getTime();
+    bool exchange();
+    time_t getDate();
     int getInfLine(int channel, bool drop);
     bool solutionIsValid();
     void findFreeChannels();
@@ -145,8 +146,12 @@ typedef struct solution_tag {
     double *getLla();
     double getTimeError();
     int getGain();
+    float getPower();
+    int getSlvCount();
     QTcpSocket *getSocket();
-    
+    void setSlvCount(int32_t value);
+    void setGain(int32_t value);
+    void setChannel(uint32_t channel, uint32_t id, uint32_t carrier);
 private:
     
     static const uint32_t Seop       = 0x7E7E7E7E;
@@ -186,19 +191,20 @@ private:
     time_t date[ChannelCount];
     int infline[ChannelCount];
     bool locked[ChannelCount];
-    float power[ChannelCount];
     int states[ChannelCount];
     int id[ChannelCount];
     int freeChannels[ChannelCount];
     int freeChannelsCount;
+    int packetCounter;
+    int packetErrorCounter;
 
     float snr[ChannelCount];
     int time[ChannelCount];
     double xyzt[4];
     double lla[3];
-    bool solution_valid;
     int timeOffset;
     rx_settings settings;
+    solution sol;
     QTcpSocket *tcpSocket;
     QDataStream *ds;
     TimeSender *timeSender;

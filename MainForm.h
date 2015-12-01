@@ -11,8 +11,8 @@
 #include <QSystemTrayIcon>
 #include <QDebug>
 #include "ui_MainForm.h"
-#include "EthlInterface.h"
 #include "PlotForm.h"
+#include "EthlInterface.h"
 #include "IoForm.h"
 #include "QLed.h"
 #include "PanelRadar.h"
@@ -90,8 +90,6 @@ private:
     void createActions();
     void createTrayIcon();
     void readSettings();
-    void setChannel(uint32_t channel, uint32_t id, uint32_t carrier);
-    void setGain(int32_t value);
     void saveScreen();
     float gain2db(int value);
 private slots:

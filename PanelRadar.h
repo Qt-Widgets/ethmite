@@ -18,7 +18,7 @@ public:
     static const int ItemsCount = 32;
     PanelRadar();
     virtual ~PanelRadar();
-    void setRadarItem(int index, qreal azm, qreal elv);    
+    void setRadarItem(int index, qreal azm, qreal elv, int state);    
 protected:    
     virtual void paintEvent(QPaintEvent*);
     
@@ -29,9 +29,11 @@ private:
         RadarItem() {    
             azm     = 0.0;//(qreal)(qrand() % 628) * 0.01;
             elv     = -M_PI_2;//(qreal)(qrand() % 157) * 0.01;
+            state = StateNotLocked;
         }
         qreal azm;
         qreal elv;
+        int state;
     };
     
     RadarItem *items;

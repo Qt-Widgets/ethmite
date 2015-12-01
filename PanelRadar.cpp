@@ -86,8 +86,24 @@ void PanelRadar::drawItems(QPainter *p) {
 
             QPainterPath path;
             path.addEllipse(QPointF(x, y), r, r);
-            p->fillPath(path, QColor("lightgreen"));
-            p->setPen(QColor("green"));
+            switch (items[i].state) {
+                case StateDllLocked:
+                    p->fillPath(path, ColorDllLocked);
+                    p->setPen(ColorPenDllLocked);
+                    break;
+                case StatePllLocked:
+                    p->fillPath(path, ColorPllLocked);
+                    p->setPen(ColorPenPllLocked);
+                    break;
+                case StateInfLocked:
+                    p->fillPath(path, ColorInfLocked);
+                    p->setPen(ColorPenInfLocked);
+                    break;
+                default:
+                    p->fillPath(path, ColorNotLocked);
+                    p->setPen(ColorPenNotLocked);
+                    break;
+            }
             p->drawPath(path);
             p->setPen(QColor("black"));
             p->drawText(QRectF(x - r, y - r, 2 * r, 2 * r), Qt::AlignCenter, label);
@@ -95,10 +111,11 @@ void PanelRadar::drawItems(QPainter *p) {
     }
 }
 
-void PanelRadar::setRadarItem(int index, qreal azm, qreal elv) {
+void PanelRadar::setRadarItem(int index, qreal azm, qreal elv, int state) {
     if (index >= 0 && index < ItemsCount) {
         items[index].azm = azm;
         items[index].elv = elv;
+        items[index].state = state;
         repaint();
     }
 }

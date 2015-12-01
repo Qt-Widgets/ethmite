@@ -9,9 +9,9 @@
 #include <time.h>
 
 PanelInfo::PanelInfo() {
-    setTime(32768);
+    setTime(0);
     setDate(0);
-    setSolution(0.5, 1, 300, 0.12345);
+    setSolution(0.0, 0.0, 0.0, 0.0);
 }
 
 PanelInfo::~PanelInfo() {
@@ -38,12 +38,12 @@ void PanelInfo::paintEvent(QPaintEvent* event) {
     font.setFamily("Consolas");
     p.setFont(font);
 
-    p.drawText(QPointF(0, dy * 1), lineDate);
-    p.drawText(QPointF(0, dy * 2), lineTime);
-    p.drawText(QPointF(0, dy * 3), lineLat);
-    p.drawText(QPointF(0, dy * 4), lineLon);
-    p.drawText(QPointF(0, dy * 5), lineAlt);
-    p.drawText(QPointF(0, dy * 6), lineDt);
+    p.drawText(QPointF(0, dy * 1 - 0.5 * fs), lineDate);
+    p.drawText(QPointF(0, dy * 2 - 0.5 * fs), lineTime);
+    p.drawText(QPointF(0, dy * 3 - 0.5 * fs), lineLat);
+    p.drawText(QPointF(0, dy * 4 - 0.5 * fs), lineLon);
+    p.drawText(QPointF(0, dy * 5 - 0.5 * fs), lineAlt);
+    p.drawText(QPointF(0, dy * 6 - 0.5 * fs), lineDt);
     
     p.end();
 }

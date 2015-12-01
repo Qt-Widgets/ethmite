@@ -17,7 +17,7 @@ public:
     PanelWorld();
     virtual ~PanelWorld();
     void setPosition(qreal lat, qreal lon);
-    void setSolution(qreal lat, qreal lon);
+    void setSolution(qreal lat, qreal lon, bool is_valid);
 protected:    
     virtual void paintEvent(QPaintEvent*);
 private:
@@ -26,6 +26,7 @@ private:
     qreal lonw;
     qreal lats;
     qreal lons;
+    bool is_valid;
 };
 
 #endif	/* PANELWORLD_H */

@@ -22,10 +22,13 @@ MainForm::MainForm() {
     widget.setupUi(this);
 
     widget.tabWidget->tabBar()->hide();
-    
+
+#ifdef DEBUG_LOGFILES
     if (!QDir::current().exists("img")) {
         QDir::current().mkdir("img");
     }
+#endif
+    
     image_index = 0;
     
     widgetRadar = new PanelRadar();
@@ -177,7 +180,7 @@ MainForm::MainForm() {
     }
     
     for (int i = 0; i < RadarChannelCount; i++) {
-        widgetRadar->setRadarItem(i, 0.0, -1.0);
+        widgetRadar->setRadarItem(i, 0.0, -1.0, 0);
     }
     
     widget.gbState->setLayout(layoutSatState);
@@ -199,47 +202,55 @@ void MainForm::timerEvent(QTimerEvent * event) {
         for (int i = 0; i < ChannelCount; i++) {
             QColor c = com->isLocked(i) ? Qt::green : Qt::yellow;
             leds[i]->setState(c);
-            widgetDiagram->setDiagramItem(i, com->getStates(i), com->getId(i), com->getSnr(i) * 0.02);
+            widgetDiagram->setDiagramItem(i, com->getState(i), com->getId(i), com->getSnr(i) * 0.02);
         }
         
         if (com->solutionIsValid()) {
             widgetInfo->setSolution(com->getLla()[0], com->getLla()[1], com->getLla()[2], com->getTimeError());
-            widgetWorld->setSolution(com->getLla()[0], com->getLla()[1]);
+            widgetWorld->setSolution(com->getLla()[0], com->getLla()[1], com->solutionIsValid());
         }
         
-        for (int i = 0; i < ChannelCount; i++) {
-            if (com->getStates(i) == 7) {
-                widgetInfo->setTime(com->getTime(i));
-                widgetInfo->setDate(com->getDate(i));
-                break;
-            }
+        int time = com->getTime();
+        if (time > 0) {
+            widgetInfo->setTime(time);
+        }
+        
+        int date = com->getDate();
+        if (date > 0) {
+            widgetInfo->setDate(date);
         }
     }
     
     if (event->timerId() == timerIdSlow) {
         open();
         setSatelliteIndex();
-        QString s1 = (s->state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
+        QString s0 = (s->state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
+        QString s1 = (com->exchange()) ? "Да" : "Нет";
         QString s2 = (com->solutionIsValid()) ? "Да" : "Нет";
-        float pwr = com->getPower(0);
+        float pwr = com->getPower();
         pwr = (pwr > 0.0) ? log10f(pwr) * 10.0 : 0.0;
         float db = gain2db(gaincode);
         if (pwr < settingMinPower) {
             gaincode = (gaincode + 5 > 255) ? 255 : gaincode + 5;
-            setGain(gaincode);
+            com->setGain(gaincode);
         }
         else {
             if (pwr > settingMaxPower) {
                 gaincode = ((gaincode - 5 < 128) ? 128 : gaincode - 5);
-                setGain(gaincode);
+                com->setGain(gaincode);
             }
         }
         db = gain2db(com->getGain());
         labelInfo->setText(QString( "Соединение: %1 \tОбмен: %2 \t"
                                     "Антенна: %3 дБ \tУсиление: %4 дБ\t"
                                     "Решение: %5")
-            .arg(s1).arg(s1).arg(pwr - db, 0, 'f', 1).arg(db, 0, 'f', 1).arg(s2));
-//        saveScreen();
+            .arg(s0).arg(s1).arg(pwr - db, 0, 'f', 1).arg(db, 0, 'f', 1).arg(s2));
+        if (settingSlvCount != com->getSlvCount()) {
+            com->setSlvCount(settingSlvCount);
+        }
+#ifdef DEBUG_LOGFILES
+        saveScreen();
+#endif
     }
 }
 
@@ -278,64 +289,6 @@ void MainForm::readyPlotSlot(float **plot) {
     plotForm.setData(plot, 512);
 }
 
-void MainForm::setChannel(uint32_t channel, uint32_t id, uint32_t carrier) {
-    EthInterface::command cmd;
-    QTcpSocket *s = com->getSocket();
-    
-    if (s->isOpen() && s->state() == QTcpSocket::ConnectedState && s->isValid() && s->isWritable()) {
-        cmd.cmd  = EthInterface::CmdWrite;
-        cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
-
-        cmd.addr = (EthInterface::CmdAddrLprsSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
-        cmd.value = id;
-        cmd.offset = offsetof(EthInterface::loop_prs, number) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-        cmd.value = 0;
-        cmd.offset = offsetof(EthInterface::loop_prs, error) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-
-        cmd.addr = (EthInterface::CmdAddrLprsHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
-        cmd.value = id;
-        cmd.offset = offsetof(EthInterface::loop_prs, number) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-        cmd.value = 0;
-        cmd.offset = offsetof(EthInterface::loop_prs, error) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-
-        cmd.addr = (EthInterface::CmdAddrLcarSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
-        cmd.value = carrier;
-        cmd.offset = offsetof(EthInterface::loop_car, code) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-        cmd.value = 0;
-        cmd.offset = offsetof(EthInterface::loop_car, error) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-
-        cmd.addr = (EthInterface::CmdAddrLcarHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
-        cmd.value = carrier;
-        cmd.offset = offsetof(EthInterface::loop_car, code) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-        cmd.value = 0;
-        cmd.offset = offsetof(EthInterface::loop_car, error) / sizeof(uint32_t);
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-    }
-}
-
-void MainForm::setGain(int32_t value) {
-    EthInterface::command cmd;
-    QTcpSocket *s = com->getSocket();
-    
-    if (s->isOpen() && s->state() == QTcpSocket::ConnectedState && s->isValid() && s->isWritable()) {
-        
-        cmd.cmd  = EthInterface::CmdWrite;
-        cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
-
-        cmd.addr = EthInterface::CmdAddrVga;
-        cmd.value = (uint32_t)(value & 0xFF);
-        cmd.offset = 0;
-        com->sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
-    }
-}
-
 void MainForm::setSatelliteIndex() {
     int c = 0;
     Satellite sat(settingLat, settingLon, settingAlt);
@@ -348,7 +301,7 @@ void MainForm::setSatelliteIndex() {
             if (sat.isValid(i)) {
                 sat.setTime(time(0), i);
 
-                widgetRadar->setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1]);
+                widgetRadar->setRadarItem(i, sat.getAerv()[0], sat.getAerv()[1], com->getIdState(i + 1));
 
                 if (sat.isValid(i) && (sat.getAerv()[1] * 180.0 / M_PI > 15.0)) {
                     double f = sat.getFrequencyL1Current(i);
@@ -356,7 +309,7 @@ void MainForm::setSatelliteIndex() {
                     f = f * 4294967296.0 / 100000000.0;
                     c = com->getFreeChannel(i + 1);
                     if (c >= 0) {
-                        setChannel((uint32_t)c, (uint32_t)(i + 1), (uint32_t)f);
+                        com->setChannel((uint32_t)c, (uint32_t)(i + 1), (uint32_t)f);
                     }
                 }
             }
@@ -365,11 +318,11 @@ void MainForm::setSatelliteIndex() {
     else {
         for (int i = 0; i < com->ChannelCount; i++) {
             int infline = com->getInfLine(i, true);
-            if (((com->getStates(i) & 3) != 3) || (infline < 1) || (infline > 15)) {
+            if (((com->getState(i) & 3) != 3) || (infline < 1) || (infline > 15)) {
                 double f = sat.FrequencyL1 + sat.FrequencyL1Delta * (i - 3);
                 f -= 1575000000.0;
                 f = f * 4294967296.0 / 100000000.0;
-                setChannel((uint32_t)i, (uint32_t)(i + 1), (uint32_t)f);
+                com->setChannel((uint32_t)i, (uint32_t)(i + 1), (uint32_t)f);
             }
         }
     }

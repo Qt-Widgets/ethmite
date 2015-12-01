@@ -27,8 +27,11 @@ EthInterface::EthInterface(int timeOffset, quint16 udpPort) {
     plot[0] = new float[PlotLength];
     plot[1] = new float[PlotLength];
     
-    solution_valid = false;
+    packetCounter = 0;
+    packetErrorCounter = 0;
+    
     memset(&settings, 0, sizeof(rx_settings));
+    memset(&sol, 0, sizeof(solution));
     
     for (int i = 0; i < ChannelCount; i++) {
         
@@ -151,24 +154,48 @@ int EthInterface::getId(int channel) {
     return id[channel];
 }
 
-int EthInterface::getStates(int channel) {
+int EthInterface::getState(int channel) {
     return states[channel] & 0x7;
+}
+
+int EthInterface::getIdState(int id) {
+    int result = 0;
+    for (int i = 0; i < ChannelCount; i++) {
+        if (this->id[i] == id) {
+            result = states[i] & 0x7;
+        }
+    }
+    return result;
 }
 
 float EthInterface::getSnr(int channel) {
     return snr[channel];
 }
 
-int EthInterface::getTime(int channel) {
-    return time[channel];
+int EthInterface::getTime() {
+    for (int i = 0; i < ChannelCount; i++) {
+        if (states[i] == 7) {
+            for (int j = i + 1; j < ChannelCount; j++) {
+                if ((states[j] == 7) && (time[i] == time[j])) {
+                    return time[i];
+                }
+            }
+        }
+    }
+    return -1;
 }
 
-time_t EthInterface::getDate(int channel) {
-    return date[channel];
-}
-
-float EthInterface::getPower(int channel) {
-    return power[channel];
+time_t EthInterface::getDate() {
+    for (int i = 0; i < ChannelCount; i++) {
+        if (states[i] == 7) {
+            for (int j = i + 1; j < ChannelCount; j++) {
+                if ((states[j] == 7) && (date[i] == date[j])) {
+                    return date[i];
+                }
+            }
+        }
+    }
+    return -1;
 }
 
 int EthInterface::getInfLine(int channel, bool drop) {
@@ -180,8 +207,25 @@ int EthInterface::getInfLine(int channel, bool drop) {
 }
 
 bool EthInterface::solutionIsValid() {
-    return solution_valid;
+    int c = 0;
+    for (int i = 0; i < ChannelCount; i++) {
+        if (states[i] == 7) {
+            c++;
+        }
+    }
+    return ((sol.is_valid > 0) && (c >= settings.slv_count));
 }
+
+bool EthInterface::exchange() {
+    static int value;
+    bool result = false;
+    if (value != packetCounter) {
+        result = true;
+        value = packetCounter;
+    }
+    return result;
+}
+
 
 void EthInterface::clear() {
 
@@ -262,10 +306,13 @@ void EthInterface::execCommand() {
                 locked[lprs->id] = (bool)lprs->locked;
                 states[lprs->id] = lprs->locked ? states[lprs->id] | 0x01 : states[lprs->id] & 0xFE;
                 time[lprs->id] = lprs->index + timeOffset;
-                power[lprs->id] = lprs->power;
                 
-                if (states[lprs->id] == 0x7) {
-                    timeSender->setTime(time[lprs->id]);
+//                if (states[lprs->id] == 0x7) {
+//                    timeSender->setTime(time[lprs->id]);
+//                }
+                int t = getTime();
+                if (t > 0) {
+                    timeSender->setTime(t);
                 }
             }
             break;
@@ -332,10 +379,11 @@ void EthInterface::execCommand() {
             acceptFrame();
             break;
         case CmdAddrSlv:
-            if (slv->count > 0 && slv->count <= ChannelCount) {
-                puts("");
-                printf("%d\t%f\t%12.4lf\n", slv->count, slv->err, slv->dt * 1000);
-                solution_valid = (slv->is_valid > 0);
+            memcpy(&sol, slv, sizeof(solution));
+//            if (slv->count > 0 && slv->count <= ChannelCount) {
+//                puts("");
+//                printf("%d\t%f\t%12.4lf\n", slv->count, slv->err, slv->dt * 1000);
+//                solution_valid = (slv->is_valid > 0);
 //                for (int i = 0; i < slv->count; i++) {
 //                    printf("%12.4lf\t%12.4lf\t%12.4lf\t%12.4lf\t%12e\n",
 //                            slv->rng[i], 
@@ -343,7 +391,7 @@ void EthInterface::execCommand() {
 //                            slv->sat[i * 4 + 2], slv->sat[i * 4 + 3]
 //                        );
 //                }
-            }
+//            }
 #ifdef DEBUG_LOGFILES
             if (slv->is_valid > 0) {
                 ssol << slv->count << '\t' << slv->is_valid << '\t' << slv->iter << '\t' <<
@@ -392,6 +440,14 @@ double *EthInterface::getLla() {
 
 int EthInterface::getGain() {
     return settings.gain;
+}
+
+float EthInterface::getPower() {
+    return settings.power;
+}
+
+int EthInterface::getSlvCount() {
+    return settings.slv_count;
 }
 
 void EthInterface::xyz2lla(double *xyz, double *lla) {
@@ -507,9 +563,11 @@ bool EthInterface::acceptData(uint32_t value) {
         rs = false;
         if ((pos > 1) && (crc(buffer, 0, pos - 1) == buffer[pos - 1])) {
             rdy = true;
+            packetCounter++;
         }
         else {
             if (pos > 1) {
+                packetErrorCounter++;
                 printf("bad cs: pos %d\n", pos);
                 printf("0x%08X != 0x%08X\n", crc(buffer, 0, pos - 1), buffer[pos - 1]);
                 for (int i = 0; i < pos; ++i) {
@@ -543,4 +601,74 @@ uint32_t EthInterface::crc(uint32_t *data, int from, int len) {
     }
 
     return cs;
+}
+
+void EthInterface::setSlvCount(int32_t value) {
+    command cmd;
+    
+    if (tcpSocket->isOpen() && (tcpSocket->state() == QTcpSocket::ConnectedState) && tcpSocket->isValid() && tcpSocket->isWritable()) {
+        cmd.cmd  = CmdWrite;
+        cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
+
+        cmd.addr = CmdAddrSettings;
+        cmd.value = (uint32_t)value;
+        cmd.offset = offsetof(rx_settings, slv_count) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+    }
+}
+
+void EthInterface::setGain(int32_t value) {
+    command cmd;
+    
+    if (tcpSocket->isOpen() && (tcpSocket->state() == QTcpSocket::ConnectedState) && tcpSocket->isValid() && tcpSocket->isWritable()) {
+        
+        cmd.cmd  = CmdWrite;
+        cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
+
+        cmd.addr = CmdAddrVga;
+        cmd.value = (uint32_t)(value & 0xFF);
+        cmd.offset = 0;
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+    }
+}
+
+void EthInterface::setChannel(uint32_t channel, uint32_t id, uint32_t carrier) {
+    command cmd;
+    
+    if (tcpSocket->isOpen() && tcpSocket->state() == QTcpSocket::ConnectedState && tcpSocket->isValid() && tcpSocket->isWritable()) {
+        cmd.cmd  = CmdWrite;
+        cmd.length = sizeof(uint32_t) / sizeof(uint32_t);
+
+        cmd.addr = (CmdAddrLprsSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = id;
+        cmd.offset = offsetof(loop_prs, number) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(loop_prs, error) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+
+        cmd.addr = (CmdAddrLprsHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = id;
+        cmd.offset = offsetof(loop_prs, number) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(loop_prs, error) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+
+        cmd.addr = (CmdAddrLcarSa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = carrier;
+        cmd.offset = offsetof(loop_car, code) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(loop_car, error) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+
+        cmd.addr = (CmdAddrLcarHa & 0x0000FFFF) | ((channel << 16) & 0xFFFF0000);
+        cmd.value = carrier;
+        cmd.offset = offsetof(loop_car, code) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+        cmd.value = 0;
+        cmd.offset = offsetof(loop_car, error) / sizeof(uint32_t);
+        sendPacket((uint32_t *)&cmd, sizeof(cmd) / sizeof(uint32_t));
+    }
 }
