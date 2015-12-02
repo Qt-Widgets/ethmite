@@ -197,7 +197,8 @@ MainForm::MainForm() {
 
 void MainForm::timerEvent(QTimerEvent * event) {
     QTcpSocket *s = com->getSocket();
-    
+    bool solutionIsValid = com->solutionIsValid();
+
     if (event->timerId() == timerIdFast) {
         for (int i = 0; i < ChannelCount; i++) {
             QColor c = com->isLocked(i) ? Qt::green : Qt::yellow;
@@ -205,10 +206,10 @@ void MainForm::timerEvent(QTimerEvent * event) {
             widgetDiagram->setDiagramItem(i, com->getState(i), com->getId(i), com->getSnr(i) * 0.02);
         }
         
-        if (com->solutionIsValid()) {
+        if (solutionIsValid) {
             widgetInfo->setSolution(com->getLla()[0], com->getLla()[1], com->getLla()[2], com->getTimeError());
-            widgetWorld->setSolution(com->getLla()[0], com->getLla()[1], com->solutionIsValid());
         }
+        widgetWorld->setSolution(com->getLla()[0], com->getLla()[1], solutionIsValid);
         
         int time = com->getTime();
         if (time > 0) {
@@ -226,7 +227,7 @@ void MainForm::timerEvent(QTimerEvent * event) {
         setSatelliteIndex();
         QString s0 = (s->state() == QTcpSocket::ConnectedState) ? "Да" : "Нет";
         QString s1 = (com->exchange()) ? "Да" : "Нет";
-        QString s2 = (com->solutionIsValid()) ? "Да" : "Нет";
+        QString s2 = solutionIsValid ? "Да" : "Нет";
         float pwr = com->getPower();
         pwr = (pwr > 0.0) ? log10f(pwr) * 10.0 : 0.0;
         float db = gain2db(gaincode);
