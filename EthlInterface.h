@@ -138,7 +138,7 @@ typedef struct solution_tag {
     int getTime();
     bool exchange();
     time_t getDate();
-    int getInfLine(int channel, bool drop);
+    bool isBadChannel(int channel);
     bool solutionIsValid();
     void findFreeChannels();
     int getFreeChannel(int id);

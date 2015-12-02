@@ -198,12 +198,9 @@ time_t EthInterface::getDate() {
     return -1;
 }
 
-int EthInterface::getInfLine(int channel, bool drop) {
-    int value = infline[channel];
-    if (drop) {
-        infline[channel] = 0;
-    }
-    return value;
+bool EthInterface::isBadChannel(int channel) {
+    infline[channel] = ((states[channel] == 7) || (infline[channel] >= 12)) ? 0 : infline[channel] + 1;
+    return (infline[channel] == 12);
 }
 
 bool EthInterface::solutionIsValid() {
@@ -361,7 +358,7 @@ void EthInterface::execCommand() {
 #endif
                 states[inf->id] = inf->locked ? states[inf->id] | 0x04 : states[inf->id] & 0xFB;
                 date[inf->id] = inf->date;
-                infline[inf->id] = (inf->inf[0] >> 27) & 0x1F;
+//                infline[inf->id] = (inf->inf[0] >> 27) & 0x1F;
             }
             break;
         case CmdAddrInfoHa:
