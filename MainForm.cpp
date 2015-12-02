@@ -318,8 +318,7 @@ void MainForm::setSatelliteIndex() {
     }
     else {
         for (int i = 0; i < com->ChannelCount; i++) {
-            int infline = com->getInfLine(i, true);
-            if (((com->getState(i) & 3) != 3) || (infline < 1) || (infline > 15)) {
+            if (((com->getState(i) & 3) != 3) || com->isBadChannel(i)) {
                 double f = sat.FrequencyL1 + sat.FrequencyL1Delta * (i - 3);
                 f -= 1575000000.0;
                 f = f * 4294967296.0 / 100000000.0;
