@@ -8,10 +8,10 @@
 #ifndef ETHINTERFACE_H
 #define	ETHINTERFACE_H
 
-#define DEBUG_LOGFILES
-//#ifdef DEBUG_LOGFILES
-//#undef DEBUG_LOGFILES
-//#endif
+//#define DEBUG_LOGFILES
+#ifdef DEBUG_LOGFILES
+#undef DEBUG_LOGFILES
+#endif
 
 #include <QFile>
 #include <QTextStream>
